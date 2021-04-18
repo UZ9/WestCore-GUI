@@ -72,6 +72,7 @@ namespace WestCore_GUI
             this.plotView2.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
             this.plotView2.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
             this.plotView2.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
+            this.plotView2.Click += new System.EventHandler(this.plotView2_Click);
             // 
             // Debug
             // 

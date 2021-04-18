@@ -85,8 +85,8 @@ namespace WestCore_GUI.Charts
                     //AbsoluteMinimum = -2,
                     //AbsoluteMaximum = 2,
                     // TODO: These will have to be changed
-                    Maximum = 5,
-                    AbsoluteMaximum = 5,
+                    Maximum = 200,
+                    AbsoluteMaximum = 200,
                     AbsoluteMinimum = -5,
                     IsZoomEnabled = false
                 };
@@ -97,7 +97,7 @@ namespace WestCore_GUI.Charts
                     // TODO: These will have to be changed// TODO: These will have to be changed
                     Maximum = 100,
                     Minimum = 1,
-                    AbsoluteMaximum = 500,
+                    AbsoluteMaximum = 50000,
                     AbsoluteMinimum = 0
                 };
 

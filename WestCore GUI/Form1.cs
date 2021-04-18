@@ -29,11 +29,21 @@ namespace WestCore_GUI
 
         public static ListBoxLog listBoxLog;
         public static LiveChart pidChart;
+        public static LiveChart.Builder motorsBuilder;
+        public static LiveChart motors;
+        public static OxyPlot.WindowsForms.PlotView plotview2;
 
-
+        public static Form1 instance;
 
         public Form1()
         {
+            instance = this;
+
+            plotview2 = plotView2;
+
+
+
+
             InitializeComponent();
 
             Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 20, 20));
@@ -47,6 +57,8 @@ namespace WestCore_GUI
                 .AddSeries("I")
                 .AddSeries("D")
                 .Build();
+
+            motorsBuilder = new LiveChart.Builder("PID Results", true);
 
 
             plotView1.Model = pidChart.model; // Set model
@@ -124,7 +136,7 @@ namespace WestCore_GUI
                 AbsoluteMinimum = -12000
             });
 
-            plotView2.Model = model;
+            //plotView2.Model = model;
 
             // TODO: Move this back to library
 
@@ -175,6 +187,14 @@ namespace WestCore_GUI
                         });
             }
 
+            do
+            {
+                System.Threading.Thread.Sleep(50);
+            } while (Program.motors == null);
+
+            plotView2.Model = Program.motors.model;
+            Program.setup = true;
+
 
 
 
@@ -184,10 +204,6 @@ namespace WestCore_GUI
 
         private int CalculateNewVoltage(int currentVoltage, bool isLeftTarget)
         {
-            if (currentVoltage == 0)
-            {
-                WestDebug.Log(Level.Critical, "Critical test - reached 0");
-            }
 
             if (isLeftTarget)
             {
@@ -198,12 +214,6 @@ namespace WestCore_GUI
                 else if (currentVoltage > leftTarget)
                 {
                     currentVoltage -= 20;
-                }
-                else
-                {
-                    WestDebug.Log(Level.Error, "Example error");
-                    // Inverse target to go the other way
-                    leftTarget *= -1;
                 }
             }
             else
@@ -218,8 +228,6 @@ namespace WestCore_GUI
                 }
                 else
                 {
-                    WestDebug.Log(Level.Info, "Right Target reached its peak");
-
                     // Inverse target to go the other way
                     rightTarget *= -1;
                 }
@@ -302,10 +310,15 @@ namespace WestCore_GUI
             Debug = 5
         };
 
+        private void plotView2_Click(object sender, EventArgs e)
+        {
+
+        }
+
         public sealed class ListBoxLog : IDisposable
         {
-            private const string DEFAULT_MESSAGE_FORMAT = "{0} [{5}] : {8}";
-            private const int DEFAULT_MAX_LINES_IN_LISTBOX = 2000;
+            private const string DEFAULT_MESSAGE_FORMAT = "{8}";//"{0} [{5}] : {8}";
+            private const int DEFAULT_MAX_LINES_IN_LISTBOX = 4000;
 
             private bool _disposed;
             private ListBox _listBox;
