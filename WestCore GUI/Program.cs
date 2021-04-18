@@ -54,17 +54,14 @@ namespace WestCore_GUI
 
                 while (true)
                 {
-                    if (Form1.pidChart == null) continue;
+                    if (pidChart == null) continue;
 
                     try
                     {
-
-                        Console.WriteLine("waiting for line");
                         var len = (int)streamReader.ReadUInt32();
                         var li = new string(streamReader.ReadChars(len));
 
                         WestDebug.Log(Level.Info, li);
-                        Console.WriteLine("found line " + li);
 
                         if (!li.StartsWith("GUI_DATA_8378")) continue;
 
@@ -78,7 +75,6 @@ namespace WestCore_GUI
 
                         for (int i = 0; i < split.Length; i++)
                         {
-                            Console.WriteLine("Found split " + split[i]);
 
                             if (split[i].Length <= 1) continue;
 
@@ -87,22 +83,22 @@ namespace WestCore_GUI
 
                             for (int j = 1; j < variableSplit.Length; j++)
                             {
-                                Console.WriteLine("Found varsplit " + variableSplit[i]);
-
                                 if (variableSplit[j].Length <= 1) continue;
 
                                 string[] valueSplit = variableSplit[j].Split('=');
 
+
+
                                 if (!chartBuilt)
                                 {
-                                    Console.WriteLine("Adding series");
                                     motorsBuilder.AddSeries(variableSplit[0].Split('=')[1]);
                                 }
                                 else
                                 {
-                                    Console.WriteLine(valueSplit.ToString());
-                                    Console.WriteLine($"Adding {(int)double.Parse(valueSplit[1])} at {i} at frame {currentFrame}");
-                                    motors.AddPoint(i, currentFrame, (int)double.Parse(valueSplit[1]));
+                                    lock (motors.model.SyncRoot)
+                                    {
+                                        motors.AddPoint(i, frameIncrement, currentFrame, (int)double.Parse(valueSplit[1]));
+                                    }
                                 }
                             }
                         }

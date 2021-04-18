@@ -23,7 +23,7 @@ namespace WestCore_GUI.Charts
             model = builder.model;
         }
 
-        public void AddPoint(int seriesIndex, double xPoint, double yPoint)
+        public void AddPoint(int seriesIndex, int deltaX, double xPoint, double yPoint)
         {
             (model.Series[seriesIndex] as LineSeries).Points.Add(new DataPoint(xPoint, yPoint));
 
@@ -37,8 +37,8 @@ namespace WestCore_GUI.Charts
             // - Only pan when the max point amount has exceeded
             if (seriesIndex == 0 && (builder.scroll) && (xPoint > builder.xAxis.Maximum))
             {
-                // Finds the viewport offset and adds a -1 transform to it
-                double result = builder.xAxis.Transform(-1 + builder.xAxis.Offset);
+                // Finds the viewport offset and adds a -20 transform to it
+                double result = builder.xAxis.Transform(-deltaX + builder.xAxis.Offset);
 
                 builder.xAxis.Pan(result);
 
@@ -97,7 +97,7 @@ namespace WestCore_GUI.Charts
                     // TODO: These will have to be changed// TODO: These will have to be changed
                     Maximum = 100,
                     Minimum = 1,
-                    AbsoluteMaximum = 50000,
+                    //AbsoluteMaximum = 50000,
                     AbsoluteMinimum = 0
                 };
 

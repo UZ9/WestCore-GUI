@@ -264,7 +264,7 @@ namespace WestCore_GUI
                     double y = 0;
 
                     y = 0.5 * (-3.2 * Math.Sin(-1.3 * x) - 1.2 * Math.Sin(-1.7 * Math.E * x) + 1.9 * Math.Sin(1.3 * Math.PI * x)) * random.NextDouble() + random.Next(0, 5);
-                    chart.AddPoint(seriesIndex, x, y);
+                    chart.AddPoint(seriesIndex, 1, x, y);
                 });
 
 
