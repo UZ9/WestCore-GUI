@@ -43,6 +43,8 @@ namespace WestCore_GUI
             // The stream reader will be what reads the contents from the Named Pipe
             var streamReader = new BinaryReader(namedPipeServer);
 
+            Stopwatch watch = new Stopwatch(); // The Stopwatch is used to calculate the interval between each sent. Used for timing diagnostics and making sure intervals are placed correctly
+
             Console.WriteLine("Waiting for line...");
 
             Task.Run(() =>
@@ -58,36 +60,44 @@ namespace WestCore_GUI
 
                     try
                     {
+                        watch.Start();
+
                         var len = (int)streamReader.ReadUInt32();
                         var li = new string(streamReader.ReadChars(len));
 
-                        WestDebug.Log(Level.Info, li);
+                        Console.WriteLine("Found " + li);
 
-                        if (!li.StartsWith("GUI_DATA_8378")) continue;
+
+
+                        if (!li.StartsWith("GUI_DATA_8378"))
+                        {
+                            WestDebug.Log(Level.Info, li);
+                            continue;
+                        }
 
                         li = li.Substring(13);
 
                         if (li.Length <= 1) continue;
-
-                        li += ",";
+                        if (li.StartsWith("|")) li = li.Substring(1); // TODO: Make this not as makeshift
+                        //li += ",";
 
                         string[] split = li.Split(',');
 
                         for (int i = 0; i < split.Length; i++)
                         {
 
+                            Console.WriteLine($"Split: {split[i]}");
+
                             if (split[i].Length <= 1) continue;
 
                             string[] variableSplit = split[i].Split('|');
 
 
-                            for (int j = 1; j < variableSplit.Length; j++)
+                            for (int j = 0; j < variableSplit.Length; j++)
                             {
                                 if (variableSplit[j].Length <= 1) continue;
 
                                 string[] valueSplit = variableSplit[j].Split('=');
-
-
 
                                 if (!chartBuilt)
                                 {
@@ -117,6 +127,12 @@ namespace WestCore_GUI
                         //Form1.pidChart.AddPoint(3, x, d);
 
                         //x++;
+
+                        watch.Stop();
+
+                        Console.WriteLine("Took " + watch.ElapsedTicks);
+
+                        watch.Restart(); // Reset watch, start counting again
 
                     }
                     catch (EndOfStreamException)

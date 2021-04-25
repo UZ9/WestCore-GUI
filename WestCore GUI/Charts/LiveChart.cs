@@ -86,9 +86,10 @@ namespace WestCore_GUI.Charts
                     //AbsoluteMaximum = 2,
                     // TODO: These will have to be changed
                     Maximum = 200,
+                    Minimum = -200,
                     AbsoluteMaximum = 200,
-                    AbsoluteMinimum = -5,
-                    IsZoomEnabled = false
+                    AbsoluteMinimum = -200,
+                    //IsZoomEnabled = false
                 };
 
                 xAxis = new LinearAxis
