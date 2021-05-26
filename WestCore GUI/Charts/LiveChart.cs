@@ -2,19 +2,25 @@
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace WestCore_GUI.Charts
+namespace Charts
 {
     public class LiveChart
     {
         private Builder builder;
 
         public PlotModel model;
+
+        public struct LineChartConfiguration
+        {
+            // Chart title
+            public string chartTitle;
+
+            // Chart Properties
+            public double minY;
+            public double maxY;
+        }
 
         public LiveChart(Builder builder)
         {
@@ -35,7 +41,7 @@ namespace WestCore_GUI.Charts
             // - Only pan if seriesIndex 0 is being added, as we don't want to pan for every single series
             // - Only pan if scroll is enabled
             // - Only pan when the max point amount has exceeded
-            if (seriesIndex == 0 && (builder.scroll) && (xPoint > builder.xAxis.Maximum))
+            if (seriesIndex == 0 && builder.scroll && (xPoint > builder.xAxis.Maximum))
             {
                 // Finds the viewport offset and adds a -20 transform to it
                 double result = builder.xAxis.Transform(-deltaX + builder.xAxis.Offset);
@@ -62,6 +68,8 @@ namespace WestCore_GUI.Charts
             // Represents the two axes of the graph
             public LinearAxis xAxis;
             public LinearAxis yAxis;
+
+
 
             public Builder(string title, bool scroll)
             {
@@ -141,6 +149,16 @@ namespace WestCore_GUI.Charts
             public Builder AddSeries(string name)
             {
                 return AddSeries(name, null);
+            }
+
+            public Builder WithConfiguration(LineChartConfiguration configuration)
+            {
+                (model.Axes[1] as LinearAxis).AbsoluteMinimum = configuration.minY;
+                (model.Axes[1] as LinearAxis).AbsoluteMaximum = configuration.maxY;
+
+                model.Title = configuration.chartTitle;
+
+                return this;
             }
 
             public Builder AddSeries(string name, IEnumerable<DataPoint> data)

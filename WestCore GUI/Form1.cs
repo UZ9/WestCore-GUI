@@ -16,8 +16,9 @@ using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using System.Windows.Threading;
-using WestCore_GUI.Charts;
+
 using System.Threading;
+using Charts;
 
 namespace WestCore_GUI
 {
@@ -31,15 +32,15 @@ namespace WestCore_GUI
         public static LiveChart pidChart;
         public static LiveChart.Builder motorsBuilder;
         public static LiveChart motors;
-        public static OxyPlot.WindowsForms.PlotView plotview2;
+        public OxyPlot.WindowsForms.PlotView plotview2;
+        public OxyPlot.WindowsForms.PlotView plotview1;
 
         public static Form1 instance;
 
-        public Form1()
+        public Form1(ChartManager manager)
         {
             instance = this;
 
-            plotview2 = plotView2;
 
 
 
@@ -50,225 +51,13 @@ namespace WestCore_GUI
 
             listBoxLog = new ListBoxLog(Debug);
 
-
-            pidChart = new LiveChart.Builder("PID Results", true)
-                .AddSeries("Target") // Add series of data
-                .AddSeries("P")
-                .AddSeries("I")
-                .AddSeries("D")
-                .Build();
-
-            motorsBuilder = new LiveChart.Builder("PID Results", true);
-
-
-            plotView1.Model = pidChart.model; // Set model
-
-
-            int numPoints = 250;
-
-            //GenerateRandomData(pidChart, numPoints, 1); // Generate random data
-            //GenerateRandomData(pidChart, numPoints, 2); // Generate random data
-            //GenerateRandomData(pidChart, numPoints, 3); // Generate random data
-
-            LineSeries series = (pidChart.model.Series[0] as LineSeries);
-
-            // Solid line creation
-            //for (int i = 0; i < numPoints; i++)
-            //{
-            //    DelayAction(20 * i, () =>
-            //    {
-            //        double x = series.Points.Count > 0 ? series.Points[series.Points.Count - 1].X + 1 : 0;
-            //        if (series.Points.Count >= 200)
-            //            series.Points.RemoveAt(0);
-            //        double y = 0;
-
-            //        y = 1;
-            //        chart.AddPoint(0, x, y);
-            //    });
-            //}
-
-
-            // Create sideways bar chart
-            var model = new PlotModel { Title = "Motors" };
-
-            var barSeries = new BarSeries
-            {
-                ItemsSource = new List<BarItem>(new[] {
-                    new BarItem { Value = 0 },
-                    new BarItem { Value = 0 },
-                    new BarItem { Value = 0 },
-                    new BarItem { Value = 0 }
-                }),
-                LabelPlacement = LabelPlacement.Middle,
-                LabelFormatString = "{0}",
-                LabelMargin = 3,
-                FontSize = 16
-
-            };
-
-            model.Series.Add(barSeries);
-
-            OxyColor mainColor = OxyColor.FromRgb(152, 147, 218);
-
-            model.Axes.Add(new CategoryAxis
-            {
-                Position = AxisPosition.Left,
-                ItemsSource = new[]
-                {
-                    "Top Left",
-                    "Bottom Left",
-                    "Top Right",
-                    "Bottom Right"
-                },
-                AbsoluteMaximum = 12000,
-                AbsoluteMinimum = -12000,
-                TicklineColor = mainColor,
-                IsZoomEnabled = false
-
-            });
-
-            model.Axes.Add(new LinearAxis
-            {
-                Position = AxisPosition.Bottom,
-                Minimum = -12000,
-                Maximum = 12000,
-                AbsoluteMaximum = 12000,
-                AbsoluteMinimum = -12000
-            });
-
-            //plotView2.Model = model;
-
-            // TODO: Move this back to library
-
-
-
-
-            model.PlotAreaBorderColor = mainColor;
-
-            // Set default color for line graph
-            model.DefaultColors[0] = mainColor;
-            model.DefaultColors[1] = OxyColor.FromRgb(231, 76, 60);
-            model.DefaultColors[2] = OxyColor.FromRgb(41, 128, 185);
-            model.DefaultColors[3] = OxyColor.FromRgb(39, 174, 96);
-
-
-
-            // Set fonts
-            model.DefaultFont = "Nirmala UI";
-            model.DefaultFontSize = 10;
-            model.TitleFontWeight = FontWeights.Bold;
-            model.TextColor = OxyColor.FromRgb(255, 255, 255);
-
-            model.LegendBackground = new OxyColor();
-
-            for (int i = 0; i < 10000; i++)
-            {
-
-                var currentBarSeries = (model.Series[0] as BarSeries);
-
-
-
-                DelayAction(10 * i, () =>
-                        {
-                            var currentData = barSeries.ItemsSource.Cast<BarItem>();
-
-                            double currentLeft = CalculateNewVoltage((int)currentData.ElementAt(0).Value, true);
-                            double currentRight = CalculateNewVoltage((int)currentData.ElementAt(3).Value, false);
-
-                            //Console.WriteLine($"Updating with currentLeft: {currentLeft}, currentRight {currentRight}");
-
-                            currentBarSeries.ItemsSource = new[] {
-                    new BarItem{Value = currentLeft},
-                    new BarItem{Value = currentLeft},
-                    new BarItem{Value = currentRight},
-                    new BarItem{Value = currentRight}
-                            };//(seriesIndex, x, y);
-                            model.InvalidatePlot(true);
-                        });
-            }
-
-            do
-            {
-                System.Threading.Thread.Sleep(50);
-            } while (Program.motors == null);
-
-            plotView2.Model = Program.motors.model;
             Program.setup = true;
 
+            plotview1 = plotView1;
+            plotview2 = plotView3;
 
 
-
-        }
-
-        private int leftTarget = -12000, rightTarget = 12000;
-
-        private int CalculateNewVoltage(int currentVoltage, bool isLeftTarget)
-        {
-
-            if (isLeftTarget)
-            {
-                if (currentVoltage < leftTarget)
-                {
-                    currentVoltage += 20;
-                }
-                else if (currentVoltage > leftTarget)
-                {
-                    currentVoltage -= 20;
-                }
-            }
-            else
-            {
-                if (currentVoltage < rightTarget)
-                {
-                    currentVoltage += 20;
-                }
-                else if (currentVoltage > rightTarget)
-                {
-                    currentVoltage -= 20;
-                }
-                else
-                {
-                    // Inverse target to go the other way
-                    rightTarget *= -1;
-                }
-            }
-
-            return currentVoltage;
-        }
-
-        public static void DelayAction(int millisecond, Action action)
-        {
-            var timer = new DispatcherTimer();
-            timer.Tick += delegate
-
-            {
-                action.Invoke();
-                timer.Stop();
-            };
-
-            timer.Interval = TimeSpan.FromMilliseconds(millisecond);
-            timer.Start();
-        }
-
-        private void GenerateRandomData(LiveChart chart, int numberOfPoints = 250, int seriesIndex = 0)
-        {
-            LineSeries series = (chart.model.Series[seriesIndex] as LineSeries);
-
-            for (int i = 0; i < numberOfPoints; i++)
-            {
-                DelayAction(20 * i, () =>
-                {
-                    double x = series.Points.Count > 0 ? series.Points[series.Points.Count - 1].X + 1 : 0;
-                    if (series.Points.Count >= 200)
-                        series.Points.RemoveAt(0);
-                    double y = 0;
-
-                    y = 0.5 * (-3.2 * Math.Sin(-1.3 * x) - 1.2 * Math.Sin(-1.7 * Math.E * x) + 1.9 * Math.Sin(1.3 * Math.PI * x)) * random.NextDouble() + random.Next(0, 5);
-                    chart.AddPoint(seriesIndex, 1, x, y);
-                });
-
-
-            }
+            manager.LoadPlots(this);
         }
 
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
@@ -280,24 +69,9 @@ namespace WestCore_GUI
             int nWidthEllipse,
             int nHeightEllise);
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void plotView1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         public enum Level : int
@@ -309,11 +83,6 @@ namespace WestCore_GUI
             Verbose = 4,
             Debug = 5
         };
-
-        private void plotView2_Click(object sender, EventArgs e)
-        {
-
-        }
 
         public sealed class ListBoxLog : IDisposable
         {

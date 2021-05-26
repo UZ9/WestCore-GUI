@@ -29,24 +29,11 @@ namespace WestCore_GUI
         /// </summary>
         private void InitializeComponent()
         {
-            this.plotView1 = new OxyPlot.WindowsForms.PlotView();
             this.button1 = new System.Windows.Forms.Button();
-            this.plotView2 = new OxyPlot.WindowsForms.PlotView();
             this.Debug = new System.Windows.Forms.ListBox();
+            this.plotView1 = new OxyPlot.WindowsForms.PlotView();
+            this.plotView3 = new OxyPlot.WindowsForms.PlotView();
             this.SuspendLayout();
-            // 
-            // plotView1
-            // 
-            this.plotView1.Location = new System.Drawing.Point(39, 43);
-            this.plotView1.Name = "plotView1";
-            this.plotView1.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plotView1.Size = new System.Drawing.Size(525, 345);
-            this.plotView1.TabIndex = 0;
-            this.plotView1.Text = "plotView1";
-            this.plotView1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
-            this.plotView1.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
-            this.plotView1.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
-            this.plotView1.Click += new System.EventHandler(this.plotView1_Click);
             // 
             // button1
             // 
@@ -61,19 +48,6 @@ namespace WestCore_GUI
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // plotView2
-            // 
-            this.plotView2.Location = new System.Drawing.Point(570, 43);
-            this.plotView2.Name = "plotView2";
-            this.plotView2.PanCursor = System.Windows.Forms.Cursors.Hand;
-            this.plotView2.Size = new System.Drawing.Size(593, 345);
-            this.plotView2.TabIndex = 2;
-            this.plotView2.Text = "plotView2";
-            this.plotView2.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
-            this.plotView2.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
-            this.plotView2.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
-            this.plotView2.Click += new System.EventHandler(this.plotView2_Click);
-            // 
             // Debug
             // 
             this.Debug.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
@@ -86,7 +60,30 @@ namespace WestCore_GUI
             this.Debug.Name = "Debug";
             this.Debug.Size = new System.Drawing.Size(500, 323);
             this.Debug.TabIndex = 3;
-            this.Debug.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            // 
+            // plotView1
+            // 
+            this.plotView1.Location = new System.Drawing.Point(39, 43);
+            this.plotView1.Name = "plotView1";
+            this.plotView1.PanCursor = System.Windows.Forms.Cursors.Hand;
+            this.plotView1.Size = new System.Drawing.Size(525, 345);
+            this.plotView1.TabIndex = 0;
+            this.plotView1.Text = "plotView1";
+            this.plotView1.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
+            this.plotView1.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
+            this.plotView1.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
+            // 
+            // plotView3
+            // 
+            this.plotView3.Location = new System.Drawing.Point(627, 43);
+            this.plotView3.Name = "plotView3";
+            this.plotView3.PanCursor = System.Windows.Forms.Cursors.Hand;
+            this.plotView3.Size = new System.Drawing.Size(525, 345);
+            this.plotView3.TabIndex = 4;
+            this.plotView3.Text = "plotView3";
+            this.plotView3.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
+            this.plotView3.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
+            this.plotView3.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
             // 
             // Form1
             // 
@@ -94,25 +91,23 @@ namespace WestCore_GUI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(51)))), ((int)(((byte)(73)))));
             this.ClientSize = new System.Drawing.Size(1200, 756);
+            this.Controls.Add(this.plotView3);
             this.Controls.Add(this.Debug);
-            this.Controls.Add(this.plotView2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.plotView1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private OxyPlot.WindowsForms.PlotView plotView1;
         private System.Windows.Forms.Button button1;
-        private OxyPlot.WindowsForms.PlotView plotView2;
         private System.Windows.Forms.ListBox Debug;
+        private OxyPlot.WindowsForms.PlotView plotView1;
+        private OxyPlot.WindowsForms.PlotView plotView3;
     }
 }
 
