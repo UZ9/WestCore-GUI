@@ -1,7 +1,7 @@
-﻿
-using OxyPlot;
+﻿using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
+using System;
 using System.Collections.Generic;
 
 namespace Charts
@@ -10,7 +10,13 @@ namespace Charts
     {
         private Builder builder;
 
-        public PlotModel model;
+        public PlotModel model { get; private set; }
+
+        /// <summary>
+        /// List of all the <see cref="LineSeries"/> elements present in the LiveChart. As the list within the plot is of type <see cref="Series"/>, 
+        /// this is added to avoid casting every <see cref="AddPoint(int, int, double, double)"/>.
+        /// </summary>
+        private List<LineSeries> lineSeries;
 
         public struct LineChartConfiguration
         {
@@ -24,6 +30,8 @@ namespace Charts
 
         public LiveChart(Builder builder)
         {
+            this.lineSeries = builder.lineSeries;
+
             this.builder = builder;
 
             model = builder.model;
@@ -31,10 +39,7 @@ namespace Charts
 
         public void AddPoint(int seriesIndex, int deltaX, double xPoint, double yPoint)
         {
-            (model.Series[seriesIndex] as LineSeries).Points.Add(new DataPoint(xPoint, yPoint));
-
-            // Marks for reconstruction
-            model.InvalidatePlot(true);
+            lineSeries[seriesIndex].Points.Add(new DataPoint(xPoint, yPoint));
 
             // Auto scrolling
             // If statements (in order):
@@ -47,10 +52,13 @@ namespace Charts
                 double result = builder.xAxis.Transform(-deltaX + builder.xAxis.Offset);
 
                 builder.xAxis.Pan(result);
-
-                // Marks for reconstruction
-                model.InvalidatePlot(false);
             }
+
+
+            // Marks for reconstruction
+            model.InvalidatePlot(true);
+
+
         }
 
 
@@ -69,12 +77,15 @@ namespace Charts
             public LinearAxis xAxis;
             public LinearAxis yAxis;
 
+            public List<LineSeries> lineSeries { get; private set; }
+
 
 
             public Builder(string title, bool scroll)
             {
                 this.title = title;
                 this.scroll = scroll;
+                this.lineSeries = new List<LineSeries>();
 
                 model = CreatePlotModel();
             }
@@ -137,7 +148,11 @@ namespace Charts
                 model.TitleFontWeight = FontWeights.Bold;
                 model.TextColor = OxyColor.FromRgb(255, 255, 255);
 
-                model.LegendBackground = new OxyColor();
+                OxyPlot.Legends.Legend legend = new OxyPlot.Legends.Legend();
+
+                legend.LegendBackground = new OxyColor();
+
+                model.Legends.Add(legend);
 
                 xAxis.FontWeight = FontWeights.Bold;
                 yAxis.FontWeight = FontWeights.Bold;
@@ -179,6 +194,8 @@ namespace Charts
                 // Add new series to native list
                 model.Series.Add(newSeries);
 
+                lineSeries.Add(newSeries);
+
                 return this;
             }
 
@@ -189,4 +206,3 @@ namespace Charts
         }
     }
 }
-

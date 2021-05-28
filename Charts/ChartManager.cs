@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using GUI_WPF_Migration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,8 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using WestCore_GUI;
-using static WestCore_GUI.Form1;
 
 namespace Charts
 {
@@ -40,7 +39,7 @@ namespace Charts
             public double maxY;
 
             [JsonProperty(PropertyName = "series-names")]
-            public List<String> seriesNames;
+            public List<string> seriesNames;
         }
 
         // Headers are to differentiate normal cout logs from ones sending data to the GUI. Only strings starting with one of these prefixes will be parsed.
@@ -72,39 +71,22 @@ namespace Charts
         /// </summary>
         public Status status;
 
-        public ChartManager()
-        {
-            charts = new Dictionary<string, LiveChart>();
-
-            HostPipeServer();
-        }
-
-        public void LoadPlots(Form1 form)
-        {
-            Task wait = WaitForFormLoad(form);
-        }
-
         /// <summary>
-        /// Waits until <see cref="Form1"/> has loaded and then assigns the plotviews
+        /// Reference to main window
         /// </summary>
-        private async Task WaitForFormLoad(Form1 form)
+        private MainWindow window;
+
+        public ChartManager(MainWindow window)
         {
-            while (charts.Count == 0)
-            {
-                Console.WriteLine("Waiting for chart to be loaded...");
-                await Task.Delay(250);
-            }
+            this.window = window;
 
-            form.plotview1.Model = charts.ToArray()[0].Value.model;
-            form.plotview2.Model = charts.ToArray()[1].Value.model;
-
-            Console.WriteLine("Model loaded");
+            charts = new Dictionary<string, LiveChart>();
         }
 
         /// <summary>
         /// Creates the NamedPipeServerStream labelled "west-pros-pipe"
         /// </summary>
-        private void HostPipeServer()
+        public void HostPipeServer()
         {
             status = Status.Loading;
 
@@ -159,10 +141,13 @@ namespace Charts
 
                         string[] rawStringArr = li.Split('|');
 
+
+
                         // We need to have at least 2 elements when splitting off of '|'. 
                         if (rawStringArr.Length != 2)
                         {
-                            WestDebug.Log(Level.Info, li); // Prints to the GUI logger
+                            // TODO: Redo WestDebug to work with WPF
+                            //WestDebug.Log(Level.Info, li); // Prints to the GUI logger
                             continue;
                         }
 
@@ -170,7 +155,7 @@ namespace Charts
                         string header = rawStringArr[0];
                         string data = rawStringArr[1];
 
-                        //Console.WriteLine($"{header} | {data}");
+                        Console.WriteLine($"{header} | {data}");
 
                         // Make sure every segment of the file header isn't empty
                         if (rawStringArr.Where(s => s.Length == 0).Any()) continue;
@@ -189,8 +174,6 @@ namespace Charts
                                     // - Chart title
                                     // - Chart min-y
                                     // - Chart max-y
-
-
                                     var json = JsonConvert.DeserializeObject<Dictionary<string, ChartSeriesObject>>(data);
 
                                     int i = 0;
@@ -220,6 +203,7 @@ namespace Charts
 
 
 
+
                                         //charts[chart.Key].model = ;
 
                                         Console.WriteLine("Successfully loaded " + chart.Key);
@@ -228,6 +212,18 @@ namespace Charts
 
                                     // All charts have now been configured, switch to operational
                                     status = Status.Operational;
+
+                                    var liveCharts = charts.Values.ToArray();
+
+                                    Application.Current.Dispatcher.Invoke(() =>
+                                    {
+                                        window.DataContext = new
+                                        {
+                                            charts = liveCharts
+                                        };
+                                    });
+
+
                                 }
                                 break;
                             case Status.Operational:
@@ -289,8 +285,10 @@ namespace Charts
                 streamReader.Dispose();
 
                 status = Status.Stopped;
-
-                System.Windows.Forms.Application.Exit();
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Application.Current.Shutdown();
+                });
             });
 
 
