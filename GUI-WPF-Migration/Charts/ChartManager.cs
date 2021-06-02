@@ -1,4 +1,5 @@
 ﻿using GUI_WPF_Migration;
+using Modules;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -52,9 +53,9 @@ namespace Charts
         private const int frameIncrement = 20;
 
         /// <summary>
-        /// Each chart is designated with a given chart ID. The chart ID allows parsed data to go to the appropriate chart.
+        /// Each module is designated with a given module ID. The module ID allows parsed data to go to the appropriate module.
         /// </summary>
-        private Dictionary<string, LiveChart> charts;
+        private Dictionary<string, Module> modules;
 
         /// <summary>
         /// The NamedPipe used to transfer information from the PROS CLI to the GUI application
@@ -80,7 +81,7 @@ namespace Charts
         {
             this.window = window;
 
-            charts = new Dictionary<string, LiveChart>();
+            modules = new Dictionary<string, Module>();
         }
 
         /// <summary>
@@ -129,9 +130,6 @@ namespace Charts
 
                 while (true) // Continuously pull data from piped server
                 {
-
-                    //if (pidChart == null) continue;
-
                     try
                     {
                         // Example string received from the stream reader:
@@ -140,8 +138,6 @@ namespace Charts
                         var li = new string(streamReader.ReadChars(len));
 
                         string[] rawStringArr = li.Split('|');
-
-
 
                         // We need to have at least 2 elements when splitting off of '|'. 
                         if (rawStringArr.Length != 2)
@@ -154,8 +150,6 @@ namespace Charts
                         // Split between the header and the actual JSON data
                         string header = rawStringArr[0];
                         string data = rawStringArr[1];
-
-                        Console.WriteLine($"{header} | {data}");
 
                         // Make sure every segment of the file header isn't empty
                         if (rawStringArr.Where(s => s.Length == 0).Any()) continue;
@@ -174,56 +168,39 @@ namespace Charts
                                     // - Chart title
                                     // - Chart min-y
                                     // - Chart max-y
-                                    var json = JsonConvert.DeserializeObject<Dictionary<string, ChartSeriesObject>>(data);
+                                    var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
 
-                                    int i = 0;
-
-                                    foreach (var chart in json)
+                                    foreach (var modulePair in json)
                                     {
-                                        ChartSeriesObject obj = chart.Value;
+                                        // modulePair: 
+                                        // Key: Module name
+                                        // Value: Config map for module
+                                        string type = modulePair.Value["module-type"] as string;
 
-                                        LiveChart.LineChartConfiguration conf = new LiveChart.LineChartConfiguration
+                                        Module newModule = null;
+
+                                        switch (type.ToLower())
                                         {
-                                            chartTitle = chart.Key,
-                                            minY = obj.minY,
-                                            maxY = obj.maxY
-                                        };
-
-                                        //RegisterChart(chart.Key, conf);
-
-                                        LiveChart.Builder builder = new LiveChart.Builder(chart.Key, true)
-                                            .WithConfiguration(conf);
-
-                                        foreach (var seriesName in obj.seriesNames)
-                                        {
-                                            builder.AddSeries(seriesName);
+                                            case "linechart":
+                                                newModule = new LineChartModule(window.ModuleSlots.Dequeue());
+                                                break;
+                                            case "odometry":
+                                                newModule = new OdometryModule(window.ModuleSlots.Dequeue());
+                                                break;
                                         }
 
-                                        charts.Add(chart.Key, builder.Build());
+                                        modules.Add(modulePair.Key, newModule);
 
 
-
-
-                                        //charts[chart.Key].model = ;
-
-                                        Console.WriteLine("Successfully loaded " + chart.Key);
-                                        i++;
+                                        Application.Current.Dispatcher.Invoke(() =>
+                                        {
+                                            // Send config data to module to initialize
+                                            newModule.Initialize(modulePair.Key, modulePair.Value);
+                                        });
                                     }
 
-                                    // All charts have now been configured, switch to operational
+                                    // All modules have now been configured, switch to operational
                                     status = Status.Operational;
-
-                                    var liveCharts = charts.Values.ToArray();
-
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        window.DataContext = new
-                                        {
-                                            charts = liveCharts
-                                        };
-                                    });
-
-
                                 }
                                 break;
                             case Status.Operational:
@@ -250,18 +227,18 @@ namespace Charts
                                             ├─ series_3 
                                             │  ├─ current_value
                                          / ----------------------------------------- */
-                                    var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(data);
+                                    var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
 
-                                    foreach (var chart in json)
+                                    foreach (var modulePair in json)
                                     {
-                                        int i = 0;
+                                        // Update module's data
+                                        modules[modulePair.Key].varMap = modulePair.Value;
 
-                                        foreach (var variable in chart.Value)
+                                        Application.Current.Dispatcher.Invoke(() =>
                                         {
-                                            // motors.AddPoint(i, frameIncrement, currentFrame, (int)double.Parse(valueSplit[1]));
-                                            // Update chart with new points
-                                            charts[chart.Key].AddPoint(i++, frameIncrement, currentFrame, double.Parse(variable.Value));
-                                        }
+                                            // Call update event for module
+                                            modules[modulePair.Key].Update();
+                                        });
                                     }
                                 }
                                 break;
@@ -295,8 +272,4 @@ namespace Charts
 
         }
     }
-
-
-
-
 }

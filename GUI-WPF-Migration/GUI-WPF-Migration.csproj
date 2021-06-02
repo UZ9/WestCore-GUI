@@ -116,6 +116,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\Charts\ChartModule.cs" />
+    <Compile Include="Modules\Charts\Types\LineChartModule.cs" />
+    <Compile Include="Modules\Module.cs" />
+    <Compile Include="Modules\Movement\OdometryModule.cs" />
+    <Compile Include="Modules\Util\ModuleTextBuilder.cs" />
+    <Compile Include="Modules\Util\ModuleTextFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

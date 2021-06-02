@@ -57,8 +57,6 @@ namespace Charts
 
             // Marks for reconstruction
             model.InvalidatePlot(true);
-
-
         }
 
 
@@ -98,7 +96,7 @@ namespace Charts
                     TitleToolTip = title,
                 };
 
-                yAxis = new LinearAxis
+                LinearAxis yAxis = new LinearAxis
                 {
                     Position = AxisPosition.Left,
                     //AbsoluteMinimum = -2,
@@ -111,7 +109,7 @@ namespace Charts
                     //IsZoomEnabled = false
                 };
 
-                xAxis = new LinearAxis
+                LinearAxis xAxis = new LinearAxis
                 {
                     Position = AxisPosition.Bottom,
                     // TODO: These will have to be changed// TODO: These will have to be changed
