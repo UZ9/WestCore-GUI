@@ -7,7 +7,7 @@ namespace Charts
 {
     class ChartUtil
     {
-        // 6/2/21 - Commented this out as it isn't needed 
+        // 6/2/21 - Commented this out as it isn't needed yet
         ///// <summary>
         ///// Generates a fake data point every 20ms until it reaches its numberOfPoints limit
         ///// 

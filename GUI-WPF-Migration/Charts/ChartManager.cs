@@ -28,21 +28,6 @@ namespace Charts
             Stopping // The ChartManager is in the process of shutting down and switching back to STOPPED
         }
 
-        /// <summary>
-        /// Used for storing values from the JSON parsing
-        /// </summary>
-        private class ChartSeriesObject
-        {
-            [JsonProperty(PropertyName = "min-y")]
-            public double minY;
-
-            [JsonProperty(PropertyName = "max-y")]
-            public double maxY;
-
-            [JsonProperty(PropertyName = "series-names")]
-            public List<string> seriesNames;
-        }
-
         // Headers are to differentiate normal cout logs from ones sending data to the GUI. Only strings starting with one of these prefixes will be parsed.
         private const string DATA_HEADER = "GUI_DATA_8378";
         private const string CONFIG_HEADER = "GUI_DATA_CONF_8378"; // TODO: Move this to an automatically generated value based off of DATA_HEADER
@@ -158,14 +143,6 @@ namespace Charts
                             case Status.AwaitingConfiguration:
                                 if (header == CONFIG_HEADER)
                                 {
-                                    // -----------------------------------------
-                                    // CONFIGURATION FILE LOADING
-                                    // -----------------------------------------
-                                    // Values retrieved from configuration data:
-                                    // - Chart Series data
-                                    // - Chart title
-                                    // - Chart min-y
-                                    // - Chart max-y
                                     var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
 
                                     foreach (var modulePair in json)
@@ -175,17 +152,9 @@ namespace Charts
                                         // Value: Config map for module
                                         string type = modulePair.Value["module-type"] as string;
 
-                                        Module newModule = null;
 
-                                        switch (type.ToLower())
-                                        {
-                                            case "linechart":
-                                                newModule = new LineChartModule(window.ModuleSlots.Dequeue());
-                                                break;
-                                            case "odometry":
-                                                newModule = new OdometryModule(window.ModuleSlots.Dequeue());
-                                                break;
-                                        }
+                                        Module newModule = CreateModule(type);
+
 
                                         modules.Add(modulePair.Key, newModule);
 
@@ -205,26 +174,6 @@ namespace Charts
                                 // Connections have been fully established, fetch data and update information
                                 if (header == DATA_HEADER)
                                 {
-                                    // -----------------------------------------
-                                    // PARSING CHART DATA
-                                    // -----------------------------------------
-                                    // The JSON format received from the PROS CLI more or less resembles this hierarchy:
-                                    /* ----------------------------------------- /
-                                            chart_1
-                                            ├─ series_1 
-                                            │  ├─ current_value
-                                            ├─ series_2 
-                                            │  ├─ current_value
-                                            ├─ series_3 
-                                            │  ├─ current_value
-                                            chart_2
-                                            ├─ series_1 
-                                            │  ├─ current_value
-                                            ├─ series_2 
-                                            │  ├─ current_value
-                                            ├─ series_3 
-                                            │  ├─ current_value
-                                         / ----------------------------------------- */
                                     var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
 
                                     foreach (var modulePair in json)
@@ -268,6 +217,28 @@ namespace Charts
 
 
 
+        }
+
+        /// <summary>
+        /// Creates a new module based on a given name
+        /// </summary>
+        /// <param name="name">A moduletype name provided by the C++ program</param>
+        /// <returns>A new <see cref="Module"/> based on the given input</returns>
+        public Module CreateModule(string name)
+        {
+            Module newModule = null;
+
+            switch (name.ToLower())
+            {
+                case "linechart":
+                    newModule = new LineChartModule(window.ModuleSlots.Dequeue());
+                    break;
+                case "odometry":
+                    newModule = new OdometryModule(window.ModuleSlots.Dequeue());
+                    break;
+            }
+
+            return newModule;
         }
 
         public (string, string)? ParseReceivedData(string rawString)
