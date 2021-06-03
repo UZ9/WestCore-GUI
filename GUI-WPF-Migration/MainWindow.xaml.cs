@@ -53,6 +53,7 @@ namespace GUI_WPF_Migration
             ChartManager chartManager = new ChartManager(this);
 
             chartManager.HostPipeServer();
+            chartManager.AwaitPipeConnection();
             chartManager.StartChartLoop();
 
             // Main shadow border

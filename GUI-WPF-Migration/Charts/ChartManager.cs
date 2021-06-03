@@ -84,6 +84,11 @@ namespace Charts
             modules = new Dictionary<string, Module>();
         }
 
+        ~ChartManager()
+        {
+            Dispose();
+        }
+
         /// <summary>
         /// Creates the NamedPipeServerStream labelled "west-pros-pipe"
         /// </summary>
@@ -102,7 +107,10 @@ namespace Charts
             pipeStream = new NamedPipeServerStream("west-pros-pipe", PipeDirection.InOut, 1, PipeTransmissionMode.Byte);
 
             Console.WriteLine("west-core-pipe successfully initialized");
+        }
 
+        public void AwaitPipeConnection()
+        {
             Console.WriteLine("Waiting for connection...");
 
             status = Status.AwaitingConnection;
@@ -135,24 +143,14 @@ namespace Charts
                         // Example string received from the stream reader:
                         // CONFIG_HEADER|JSON_DATA
                         var len = (int)streamReader.ReadUInt32();
-                        var li = new string(streamReader.ReadChars(len));
+                        var rawString = new string(streamReader.ReadChars(len));
 
-                        string[] rawStringArr = li.Split('|');
+                        var received = ParseReceivedData(rawString);
 
-                        // We need to have at least 2 elements when splitting off of '|'. 
-                        if (rawStringArr.Length != 2)
-                        {
-                            // TODO: Redo WestDebug to work with WPF
-                            //WestDebug.Log(Level.Info, li); // Prints to the GUI logger
-                            continue;
-                        }
+                        // If no header/data was found, continue
+                        if (!received.HasValue) continue;
 
-                        // Split between the header and the actual JSON data
-                        string header = rawStringArr[0];
-                        string data = rawStringArr[1];
-
-                        // Make sure every segment of the file header isn't empty
-                        if (rawStringArr.Where(s => s.Length == 0).Any()) continue;
+                        (string header, string data) = received.Value;
 
                         switch (status)
                         {
@@ -205,7 +203,7 @@ namespace Charts
                                 break;
                             case Status.Operational:
                                 // Connections have been fully established, fetch data and update information
-                                if (li.StartsWith(DATA_HEADER))
+                                if (header == DATA_HEADER)
                                 {
                                     // -----------------------------------------
                                     // PARSING CHART DATA
@@ -271,5 +269,48 @@ namespace Charts
 
 
         }
+
+        public (string, string)? ParseReceivedData(string rawString)
+        {
+            string[] rawStringArr = rawString.Split('|');
+
+            // We need to have at least 2 elements when splitting off of '|'. 
+            if (rawStringArr.Length != 2)
+            {
+                // TODO: Redo WestDebug to work with WPF
+                //WestDebug.Log(Level.Info, li); // Prints to the GUI logger
+                return null;
+            }
+
+            // Split between the header and the actual JSON data
+            string header = rawStringArr[0];
+            string data = rawStringArr[1];
+
+            // Make sure every segment of the file header isn't empty
+            if (rawStringArr.Where(s => s.Length == 0).Any()) return null;
+
+            return (header, data);
+        }
+
+        /// <summary>
+        /// Closes all ongoing streams connected to the <see cref="ChartManager"/>
+        /// </summary>
+        public void Dispose()
+        {
+            if (streamReader != null)
+            {
+                streamReader.Close();
+                streamReader.Dispose();
+            }
+
+            if (pipeStream != null)
+            {
+                if (pipeStream.IsConnected)
+                    pipeStream.Disconnect();
+                pipeStream.Close();
+                pipeStream.Dispose();
+            }
+        }
+
     }
 }
