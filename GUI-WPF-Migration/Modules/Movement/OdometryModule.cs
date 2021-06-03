@@ -118,6 +118,9 @@ namespace Modules
             }
         }
 
+        /// <summary>
+        /// Creates and alligns all TextBlocks used in the <see cref="OdometryModule"/>
+        /// </summary>
         private void CreateOdomText()
         {
             TextBlock location = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Subtitle)
@@ -170,6 +173,9 @@ namespace Modules
             moduleGrid.Children.Add(encoderContainer);
         }
 
+        /// <summary>
+        /// Creates the visualization for the robot icon
+        /// </summary>
         private void CreateRobot()
         {
             Border robotBorder = new Border();
@@ -180,8 +186,6 @@ namespace Modules
             odomGrid.Children.Add(robotBorder);
 
             robotIcon = new Ellipse();
-
-            //robotIcon.Margin = new Thickness(odomGrid.Width / 2.0 - 8, odomGrid.Height / 2.0 - 8, 0, 0);
             robotIcon.Height = 15;
             robotIcon.Width = 15;
             robotIcon.Stroke = new SolidColorBrush(Color.FromRgb(39, 43, 77)); //new SolidColorBrush(Color.FromRgb(189, 189, 189));
@@ -193,23 +197,22 @@ namespace Modules
             robotX = 4;
             robotY = 4;
 
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////
-
             robotBorder.Child = robotIcon;
 
             arrowBorder = new Border();
-            //robotBorder.Margin = new Thickness(1);
+
             arrowBorder.SetValue(Grid.RowSpanProperty, 6);
             arrowBorder.SetValue(Grid.ColumnSpanProperty, 6);
 
-
             odomGrid.Children.Add(arrowBorder);
-
-            //MouseDown += Window_MouseDown;
 
             UpdateRobotPosition();
         }
 
+
+        /// <summary>
+        /// Updates the robot's position based on <see cref="robotX"/>, <see cref="robotY"/>, and <see cref="robotHeading"/>.
+        /// </summary>
         private void UpdateRobotPosition()
         {
             (double guiX, double guiY) = PosToGuiMargin(robotX, robotY);
@@ -219,9 +222,6 @@ namespace Modules
 
             // Adjust margin
             robotIcon.Margin = new Thickness(guiX, guiY, 0, 0);
-
-            /////////////////////////////////////////////////////////////////
-
 
             (double currentX, double currentY) = PosToGuiMargin(robotX, robotY);
 
@@ -242,6 +242,10 @@ namespace Modules
             arrowBorder.Child = polygon;
         }
 
+        /// <summary>
+        /// Retrieves a color for one of the tiles. To introduce a slight bit of variety, the tiles are each assigned slightly different RGB values.
+        /// </summary>
+        /// <returns>A <see cref="Color"/> to be used in a tile</returns>
         private Color GetGridRectangleColor()
         {
             // Original color
@@ -254,6 +258,12 @@ namespace Modules
             return Color.FromRgb((byte)(color.R * randomCoefficient), (byte)(color.G * randomCoefficient), (byte)(color.B * randomCoefficient));
         }
 
+        /// <summary>
+        /// Generates a Grid Tile at a given row and column
+        /// </summary>
+        /// <param name="row">The row of the grid tile</param>
+        /// <param name="column">The column of the grid tile</param>
+        /// <returns>A <see cref="Border"/> WPF element containing a colored rectangle and border</returns>
         private Border GenerateGridTile(int row, int column)
         {
             Border border = new Border();
@@ -270,6 +280,12 @@ namespace Modules
             return border;
         }
 
+        /// <summary>
+        /// Generates a grid rectangle visualization given a row and column
+        /// </summary>
+        /// <param name="row">The row of the grid tile</param>
+        /// <param name="column">The column of the grid tile</param>
+        /// <returns>A <see cref="Rectangle"/> WPF element representing the tile's fill</returns>
         private Rectangle GenerateGridRectangle(int row, int column)
         {
             Rectangle rectangle = new Rectangle();
@@ -283,33 +299,6 @@ namespace Modules
 
             return rectangle;
         }
-
-        //private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        //{
-
-        //    Point gridPos = e.GetPosition(odomGridBorder);
-
-        //    if (gridPos.X < 0 || gridPos.Y < 0 || gridPos.X > 300 || gridPos.Y > 300) return;
-
-
-
-        //    double targetRobotX = gridPos.X / (odomGrid.Width / 6.0);
-        //    double targetRobotY = gridPos.Y / (odomGrid.Width / 6.0);
-
-        //    robotHeading += new Random().Next(1, 60);
-
-        //    if (robotHeading > 360) robotHeading -= 360;
-
-        //    robotX = targetRobotX;
-        //    robotY = targetRobotY;
-
-        //    UpdateRobotPosition();
-
-        //    //if (e.ChangedButton == MouseButton.Left)
-        //    //{
-        //    //    DragMove();
-        //    //}
-        //}
 
         /// <summary>
         /// Converts an x,y field position to GUI margin coordinates
