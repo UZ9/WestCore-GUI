@@ -57,8 +57,6 @@ namespace Modules
             robotY = Convert.ToDouble(varMap["y"]);
             robotHeading = Convert.ToDouble(varMap["heading"]);
 
-            Console.WriteLine($"Receiving {robotX}, {robotY}, {robotHeading}");
-
             UpdateRobotPosition();
         }
 

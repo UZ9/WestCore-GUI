@@ -176,17 +176,19 @@ namespace Charts
                                 {
                                     var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
 
-                                    foreach (var modulePair in json)
+                                    Application.Current.Dispatcher.Invoke(() =>
                                     {
-                                        // Update module's data
-                                        modules[modulePair.Key].varMap = modulePair.Value;
-
-                                        Application.Current.Dispatcher.Invoke(() =>
+                                        foreach (var modulePair in json)
                                         {
+                                            // Update module's data
+                                            modules[modulePair.Key].varMap = modulePair.Value;
+
+
                                             // Call update event for module
                                             modules[modulePair.Key].Update();
-                                        });
-                                    }
+
+                                        }
+                                    });
                                 }
                                 break;
                             default:

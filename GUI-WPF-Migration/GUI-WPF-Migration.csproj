@@ -38,102 +38,74 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="HarfBuzzSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\HarfBuzzSharp.2.6.1.4\lib\net462\HarfBuzzSharp.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="OxyPlot, Version=2.1.0.0, Culture=neutral, PublicKeyToken=638079a8f0bd61e9, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\OxyPlot.Core.2.1.0-unstable.1461\lib\net45\OxyPlot.dll</HintPath>
     </Reference>
     <Reference Include="OxyPlot.SkiaSharp, Version=2.1.0.0, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\OxyPlot.SkiaSharp.2.1.0-unstable.1461\lib\net45\OxyPlot.SkiaSharp.dll</HintPath>
     </Reference>
     <Reference Include="OxyPlot.SkiaSharp.Wpf, Version=2.1.0.0, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\OxyPlot.SkiaSharp.Wpf.2.1.0-unstable.1461\lib\net45\OxyPlot.SkiaSharp.Wpf.dll</HintPath>
     </Reference>
     <Reference Include="OxyPlot.Wpf.Shared, Version=2.1.0.0, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\OxyPlot.Wpf.Shared.2.1.0-unstable.1461\lib\net45\OxyPlot.Wpf.Shared.dll</HintPath>
     </Reference>
     <Reference Include="ReachFramework">
-      <Private>False</Private>
     </Reference>
     <Reference Include="SkiaSharp, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\SkiaSharp.1.68.3\lib\net462\SkiaSharp.dll</HintPath>
     </Reference>
     <Reference Include="SkiaSharp.HarfBuzz, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\SkiaSharp.HarfBuzz.1.68.3\lib\net45\SkiaSharp.HarfBuzz.dll</HintPath>
     </Reference>
     <Reference Include="SkiaSharp.Views.Desktop.Common, Version=1.68.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\SkiaSharp.Views.Desktop.Common.1.68.3\lib\net45\SkiaSharp.Views.Desktop.Common.dll</HintPath>
     </Reference>
     <Reference Include="System">
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Data">
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\System.Memory.4.5.3\lib\netstandard2.0\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Numerics">
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
     <Reference Include="System.Printing">
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <Private>False</Private>
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml">
-      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp">
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Core">
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml.Linq">
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions">
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Net.Http">
-      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
-      <Private>False</Private>
     </Reference>
     <Reference Include="WindowsBase">
-      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationCore">
-      <Private>False</Private>
     </Reference>
     <Reference Include="PresentationFramework">
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
