@@ -24,6 +24,7 @@ namespace Modules
 
         private Border odomGridBorder;
 
+        private Polygon robotArrow;
         private Ellipse robotIcon;
         private Border arrowBorder;
 
@@ -130,9 +131,9 @@ namespace Modules
                 .WithText("Location")
                 .Build();
             TextBlock positionContainer = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Paragraph)
-                .WithMargin(367, 93, 41, 355)
+                .WithMargin(367, 93, 41, 20)
                 .WithGridLocation((int)moduleContainer.GetValue(Grid.RowProperty), (int)moduleContainer.GetValue(Grid.ColumnProperty))
-                .WithGridSpan(2, 1)
+                //.WithGridSpan(2, 1)
                 .Build();
 
             positionText = new Run() { Foreground = Brushes.IndianRed, Text = "Position: (0, 0)\n" };
@@ -142,17 +143,17 @@ namespace Modules
             positionContainer.Inlines.Add(angleText);
 
             TextBlock encoderValues = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Subtitle)
-                .WithMargin(367, 195, 41, 328)
+                .WithMargin(367, 195, 41, 20)
                 .WithFont(28.5)
                 .WithGridLocation((int)moduleContainer.GetValue(Grid.RowProperty), (int)moduleContainer.GetValue(Grid.ColumnProperty))
-                .WithGridSpan(2, 1)
+                //.WithGridSpan(2, 1)
                 .WithText("Encoder Values")
                 .Build();
 
             TextBlock encoderContainer = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Paragraph)
                 .WithGridLocation((int)moduleContainer.GetValue(Grid.RowProperty), (int)moduleContainer.GetValue(Grid.ColumnProperty))
-                .WithGridSpan(2, 1)
-                .WithMargin(367, 238, 41, 319)
+                //.WithGridSpan(2, 1)
+                .WithMargin(367, 238, 41, 20)
                 .Build();
 
             leftEncoderText = new Run() { Foreground = Brushes.IndianRed, Text = "Left: 0.000000\n" };
@@ -204,6 +205,12 @@ namespace Modules
 
             odomGrid.Children.Add(arrowBorder);
 
+            // Create arrow polygon
+            robotArrow = new Polygon();
+            robotArrow.Fill = new SolidColorBrush(Color.FromRgb(186, 86, 90));
+
+            arrowBorder.Child = robotArrow;
+
             UpdateRobotPosition();
         }
 
@@ -215,7 +222,7 @@ namespace Modules
         {
             (double guiX, double guiY) = PosToGuiMargin(robotX, robotY);
 
-            positionText.Text = $"Position: ({Math.Round(robotX, 1)}, {Math.Round(robotY, 1)})\n";
+            positionText.Text = $"Position: ({Math.Round(robotX, 1):0.0}, {Math.Round(robotY, 1):0.0})\n";
             angleText.Text = $"Angle: {Math.Round(robotHeading, 1)}°";
 
             // Adjust margin
@@ -231,13 +238,11 @@ namespace Modules
 
             var points = CreateLineWithArrowPointCollection(new Point(currentX + 7.5, currentY + 7.5), new Point(currentX + xOffset + (xOffset * 0.7) + 7.5, currentY + yOffset + (yOffset * 0.7) + 7.5), 2);
 
+            robotArrow.Points = points;
 
 
-            var polygon = new Polygon();
-            polygon.Points = points;
-            polygon.Fill = new SolidColorBrush(Color.FromRgb(186, 86, 90));
 
-            arrowBorder.Child = polygon;
+
         }
 
         /// <summary>

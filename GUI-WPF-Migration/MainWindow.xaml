@@ -4,6 +4,7 @@
         xmlns:oxy="http://oxyplot.org/skiawpf"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Closing="Window_Close"
         WindowStyle="None"
         WindowState="Maximized"
         ResizeMode="NoResize"
@@ -81,6 +82,7 @@
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
 
+
                 -->
             <!--#bdbdbd-->
             <!--
@@ -91,15 +93,16 @@
                     </Border.Effect>
                 </Border>
 
-
-
                 -->
             <!--Odometry Field Tile Elements-->
             <!--
 
-            </Grid>-->
 
+            </Grid>
+
+            -->
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot5" Model="{Binding Path=charts[4]}"/>-->
+
         </Border>
 
         <!--<TextBlock TextAlignment="Center" Margin="367,50,41,10" Foreground="#ededed" TextBlock.FontWeight="Normal" TextBlock.FontFamily="Roboto" TextBlock.FontSize="28.5" Grid.Row ="1" Grid.Column="1" RenderTransformOrigin="1.13,0.722">
@@ -116,7 +119,7 @@
             <Run Text="Encoder Values"/><LineBreak/>
         </TextBlock>
 
-        <TextBlock TextAlignment="Center" Margin="367,238,41,319" TextBlock.FontWeight="Normal" TextBlock.FontFamily="Roboto" TextBlock.FontSize="24" Grid.Row ="1" Grid.Column="1" RenderTransformOrigin="1.13,0.722" Grid.RowSpan="2">
+        <TextBlock TextAlignment="Center" Margin="367,238,41,319" TextBlock.FontWeight="Normal" TextBlock.FontFamily="Roboto" TextBlock.FontSize="24" Grid.Row ="1" Grid.Column="1" RenderTransformOrigin="1.13,0.722">
         <Run Foreground="IndianRed" Text="Left: 0.000000"/>
         <LineBreak></LineBreak>
         <Run Foreground="IndianRed" Text="Right: 0.000000"/>

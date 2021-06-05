@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="GUI_WPF_Migration" Language="1033" Version="1.0.0.0" Manufacturer="Yerti" UpgradeCode="62a4679d-67b6-435e-8207-40cc19762b50">
+    <Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." AllowSameVersionUpgrades="yes"/>
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="ProductFeature" Title="GUI_WPF_Migration-Installer" Level="1">
+      <ComponentGroupRef Id="ProductComponents" />
+    </Feature>
+  </Product>
+
+  <Fragment>
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLFOLDER" Name="GUI_WPF_Migration-Installer" />
+      </Directory>
+    </Directory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+      <Component Id="ProductComponent">
+        <File Source="$(var.GUI-WPF-Migration.TargetPath)"/>
+      </Component>
+      <Component Id="HarfBuzzSharp.dll" Guid="d84ebf1e-561c-4187-afde-b6ab473a8c3b">
+        <File Id="HarfBuzzSharp.dll" Source="HarfBuzzSharp.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="libHarfBuzzSharp.dll" Guid="b88edbf7-c004-42c1-922d-82d38ffe5741">
+        <File Id="libHarfBuzzSharp.dll" Source="libHarfBuzzSharp.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="libSkiaSharp.dll" Guid="53f1923b-7000-4f43-90e8-6469210db0da">
+        <File Id="libSkiaSharp.dll" Source="libSkiaSharp.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="Newtonsoft.Json.dll" Guid="ebe06bd8-8645-449f-9232-ae0ec9280cdb">
+        <File Id="Newtonsoft.Json.dll" Source="Newtonsoft.Json.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="OxyPlot.dll" Guid="6cf5d75c-11ea-437e-b5a7-e786f8aa46f4">
+        <File Id="OxyPlot.dll" Source="OxyPlot.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="OxyPlot.SkiaSharp.dll" Guid="f4630e0d-4845-40c2-8ab6-4d0304346fb4">
+        <File Id="OxyPlot.SkiaSharp.dll" Source="OxyPlot.SkiaSharp.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="OxyPlot.SkiaSharp.Wpf.dll" Guid="8323b05a-b12e-4fe6-933c-bfa1bc01738a">
+        <File Id="OxyPlot.SkiaSharp.Wpf.dll" Source="OxyPlot.SkiaSharp.Wpf.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="OxyPlot.Wpf.Shared.dll" Guid="265305ad-95f6-4f0f-ba47-47fde285b0cc">
+        <File Id="OxyPlot.Wpf.Shared.dll" Source="OxyPlot.Wpf.Shared.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="SkiaSharp.dll" Guid="96a96017-84af-47d9-b205-17c33bc192db">
+        <File Id="SkiaSharp.dll" Source="SkiaSharp.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="SkiaSharp.HarfBuzz.dll" Guid="2de515ba-f9be-445f-9524-d99123d30508">
+        <File Id="SkiaSharp.HarfBuzz.dll" Source="SkiaSharp.HarfBuzz.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="SkiaSharp.Views.Desktop.Common.dll" Guid="773a27fa-529b-47e6-a475-6cc3d0e91412">
+        <File Id="SkiaSharp.Views.Desktop.Common.dll" Source="SkiaSharp.Views.Desktop.Common.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="System.Buffers.dll" Guid="868d168e-29d9-41c7-ae8f-09c1a09826f4">
+        <File Id="System.Buffers.dll" Source="System.Buffers.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="System.Memory.dll" Guid="42adfd87-7248-4928-99e1-b63294f569ec">
+        <File Id="System.Memory.dll" Source="System.Memory.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="System.Numerics.Vectors.dll" Guid="cd0853c0-5df4-4c49-899d-f5d2404f8b96">
+        <File Id="System.Numerics.Vectors.dll" Source="System.Numerics.Vectors.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+      <Component Id="System.Runtime.CompilerServices.Unsafe.dll" Guid="2bef45a6-f495-4d95-8d0f-b81426df5df0">
+        <File Id="System.Runtime.CompilerServices.Unsafe.dll" Source="System.Runtime.CompilerServices.Unsafe.dll" KeyPath="yes" Checksum="yes"/>
+      </Component>
+
+    </ComponentGroup>
+  </Fragment>
+</Wix>

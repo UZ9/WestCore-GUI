@@ -8,6 +8,8 @@ using System.IO;
 using System.IO.Pipes;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -31,6 +33,10 @@ namespace Charts
         // Headers are to differentiate normal cout logs from ones sending data to the GUI. Only strings starting with one of these prefixes will be parsed.
         private const string DATA_HEADER = "GUI_DATA_8378";
         private const string CONFIG_HEADER = "GUI_DATA_CONF_8378"; // TODO: Move this to an automatically generated value based off of DATA_HEADER
+
+        // An issue encountered when senting huge amounts of configuration date (~1000 characters or more) was the buffer size. The configuration string was being chopped off as it reached the CLI,
+        // meaning the JSON would freak otu and break. To solve this, data is sent in a group of configuration strings until the CONFIG_END_HEADER is reached, where it is then processed.
+        private const string CONFIG_END_HEADER = "GUI_DATA_CONF_3434_END";
 
         /// <summary>
         /// The amount of milleseconds elapsed between data packets being sent by the PROS CLI. Used for properly differentiating time on the GUI chart time elements.
@@ -61,6 +67,21 @@ namespace Charts
         /// Reference to main window
         /// </summary>
         private MainWindow window;
+
+        /// <summary>
+        /// Main task containing the chart loop code
+        /// </summary>
+        private Task chartLoop;
+
+        /// <summary>
+        /// Stores the token source for the chartLoop task
+        /// </summary>
+        private CancellationTokenSource cancelSource = new CancellationTokenSource();
+
+        /// <summary>
+        /// Stores the <see cref="CancellationToken"/> of the chartLoop. Used for cancelling the task in <see cref="Dispose"/>
+        /// </summary>
+        private CancellationToken chartLoopToken;
 
         public ChartManager(MainWindow window)
         {
@@ -117,6 +138,10 @@ namespace Charts
             //  The named pipe has been created, we now need to wait until the cONFIG_HEADER is received
             status = Status.AwaitingConfiguration;
 
+            string configString = "";
+
+            chartLoopToken = cancelSource.Token;
+
             Task.Run(() =>
             {
                 int currentFrame = 0;
@@ -137,63 +162,105 @@ namespace Charts
 
                         (string header, string data) = received.Value;
 
-                        switch (status)
+                        try
                         {
-                            // TODO: Change to JSON formatting
-                            case Status.AwaitingConfiguration:
-                                if (header == CONFIG_HEADER)
-                                {
-                                    var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
 
-                                    foreach (var modulePair in json)
+                            switch (status)
+                            {
+                                // TODO: Change to JSON formatting
+                                case Status.AwaitingConfiguration:
+                                    if (header == CONFIG_HEADER)
                                     {
-                                        // modulePair: 
-                                        // Key: Module name
-                                        // Value: Config map for module
-                                        string type = modulePair.Value["module-type"] as string;
 
 
-                                        Module newModule = CreateModule(type);
 
 
-                                        modules.Add(modulePair.Key, newModule);
 
+                                        if (data.TrimEnd().EndsWith(CONFIG_END_HEADER))
+                                        {
+                                            Console.WriteLine("Found config end header");
+
+                                            // Keep appending to the config string until all data has been received (see comments on CONFIG_END_HEADER)
+                                            configString += data.Substring(0, data.Length - CONFIG_END_HEADER.Length - 1);
+
+                                            Console.WriteLine("End config string:");
+                                            Console.WriteLine(configString);
+
+                                            var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(configString);
+
+                                            foreach (var modulePair in json)
+                                            {
+                                                // modulePair: 
+                                                // Key: Module name
+                                                // Value: Config map for module
+                                                string type = modulePair.Value["module-type"] as string;
+
+                                                Module newModule = CreateModule(type);
+
+                                                modules.Add(modulePair.Key, newModule);
+
+                                                Application.Current.Dispatcher.Invoke(() =>
+                                                {
+                                                    Console.WriteLine("Initializing " + modulePair.Key);
+
+                                                    try
+                                                    {
+                                                        // Send config data to module to initialize
+                                                        newModule.Initialize(modulePair.Key, modulePair.Value);
+                                                    }
+                                                    catch (KeyNotFoundException e)
+                                                    {
+                                                        Console.WriteLine(e);
+                                                    }
+
+                                                    Console.WriteLine("Done");
+                                                });
+                                            }
+
+                                            // All modules have now been configured, switch to operational
+                                            status = Status.Operational;
+                                        }
+                                        else
+                                        {
+                                            // Remove new lines from data
+                                            configString += Regex.Replace(data, @"\n", "");
+                                        }
+
+                                    }
+                                    break;
+                                case Status.Operational:
+                                    // Connections have been fully established, fetch data and update information
+                                    if (header == DATA_HEADER)
+                                    {
+
+                                        var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
 
                                         Application.Current.Dispatcher.Invoke(() =>
                                         {
-                                            // Send config data to module to initialize
-                                            newModule.Initialize(modulePair.Key, modulePair.Value);
+                                            foreach (var modulePair in json)
+                                            {
+                                                // Update module's data
+                                                modules[modulePair.Key].varMap = modulePair.Value;
+
+
+                                                // Call update event for module
+                                                modules[modulePair.Key].Update();
+
+                                            }
                                         });
                                     }
+                                    break;
+                                default:
+                                    break;
 
-                                    // All modules have now been configured, switch to operational
-                                    status = Status.Operational;
-                                }
-                                break;
-                            case Status.Operational:
-                                // Connections have been fully established, fetch data and update information
-                                if (header == DATA_HEADER)
-                                {
-                                    var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
-
-                                    Application.Current.Dispatcher.Invoke(() =>
-                                    {
-                                        foreach (var modulePair in json)
-                                        {
-                                            // Update module's data
-                                            modules[modulePair.Key].varMap = modulePair.Value;
-
-
-                                            // Call update event for module
-                                            modules[modulePair.Key].Update();
-
-                                        }
-                                    });
-                                }
-                                break;
-                            default:
-                                break;
-
+                            }
+                        }
+                        catch (JsonReaderException e)
+                        {
+                            Console.WriteLine("Experienced JSONREADEREXCEPTION");
+                            Console.WriteLine(e);
+                            Console.WriteLine("Json in question:");
+                            Console.WriteLine(data);
                         }
                     }
                     catch (EndOfStreamException)
@@ -215,7 +282,7 @@ namespace Charts
                 {
                     Application.Current.Shutdown();
                 });
-            });
+            }, chartLoopToken);
 
 
 
@@ -270,12 +337,21 @@ namespace Charts
         /// </summary>
         public void Dispose()
         {
+            // Cancel the task loop
+            if (cancelSource != null)
+            {
+                cancelSource.Cancel();
+                cancelSource = null;
+            }
+
+            // Shut down the streamReader connected to the pipeStream
             if (streamReader != null)
             {
                 streamReader.Close();
                 streamReader.Dispose();
             }
 
+            // Shut down the pipe stream
             if (pipeStream != null)
             {
                 if (pipeStream.IsConnected)
@@ -283,6 +359,8 @@ namespace Charts
                 pipeStream.Close();
                 pipeStream.Dispose();
             }
+
+
         }
 
     }
