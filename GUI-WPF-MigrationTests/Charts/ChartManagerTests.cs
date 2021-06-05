@@ -14,18 +14,18 @@ namespace Charts.Tests
         [TestMethod()]
         public void Constructor_ModulesDictionary_ShouldInitialize()
         {
-            ChartManager chartManager = new ChartManager(null);
+            var chartManager = new ChartManager(null);
 
-            PrivateObject chartManagerPO = new PrivateObject(chartManager);
+            var chartManagerPo = new PrivateObject(chartManager);
 
-            Assert.IsNotNull(chartManagerPO.GetField("modules"), "The Modules Dictionary of ChartManager was found null.");
+            Assert.IsNotNull(chartManagerPo.GetField("modules"), "The Modules Dictionary of ChartManager was found null.");
         }
 
         [TestMethod()]
         public void ParseReceivedData_IncorrectFormat_ShouldReturnNull()
         {
-            ChartManager chartManager = new ChartManager(null);
-            string wrongString = "CONFIG_HEADERxDATA";
+            var chartManager = new ChartManager(null);
+            const string wrongString = "CONFIG_HEADERxDATA";
 
             var result = chartManager.ParseReceivedData(wrongString);
 
@@ -35,8 +35,8 @@ namespace Charts.Tests
         [TestMethod()]
         public void ParseReceivedData_CorrectFormat_ShouldReturnHeaderAndData()
         {
-            ChartManager chartManager = new ChartManager(null);
-            string wrongString = "CONFIG_HEADER|DATA";
+            var chartManager = new ChartManager(null);
+            const string wrongString = "CONFIG_HEADER|DATA";
 
             var result = chartManager.ParseReceivedData(wrongString);
 
@@ -46,13 +46,13 @@ namespace Charts.Tests
         [TestMethod()]
         public void HostPipeServer_PipeStream_ShouldBeCreated()
         {
-            ChartManager chartManager = new ChartManager(null);
+            var chartManager = new ChartManager(null);
 
             chartManager.HostPipeServer();
 
-            PrivateObject chartManagerPO = new PrivateObject(chartManager);
+            var chartManagerPo = new PrivateObject(chartManager);
 
-            Assert.IsNotNull(chartManagerPO.GetField("pipeStream"));
+            Assert.IsNotNull(chartManagerPo.GetField("pipeStream"));
 
             Console.WriteLine("Disposing...");
 
@@ -64,15 +64,15 @@ namespace Charts.Tests
         [TestMethod()]
         public void HostPipeServer_Status_ShouldBeLoading()
         {
-            ChartManager chartManager = new ChartManager(null);
+            var chartManager = new ChartManager(null);
 
             Console.WriteLine("Starting hosting...");
 
             chartManager.HostPipeServer();
 
-            PrivateObject chartManagerPO = new PrivateObject(chartManager);
+            var chartManagerPo = new PrivateObject(chartManager);
 
-            Assert.AreEqual((ChartManager.Status)chartManagerPO.GetField("status"), ChartManager.Status.Loading);
+            Assert.AreEqual((ChartManager.CmStatus)chartManagerPo.GetField("CmStatus"), ChartManager.CmStatus.Loading);
 
             chartManager.Dispose();
         }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using GUI_WPF_Migration.Modules.Charts;
 
 namespace Modules
 {
@@ -52,7 +53,7 @@ namespace Modules
             var seriesNames = ((Newtonsoft.Json.Linq.JArray)configMap["series-names"]).ToObject<string[]>();
 
             // Initialize series list by adding each series name
-            foreach (string series in seriesNames)
+            foreach (var series in seriesNames)
             {
                 AddSeries(series);
             }
@@ -61,20 +62,20 @@ namespace Modules
             // TODO: Make this automatic with a ChartModule?
 
             // Add PlotView to window & set properties
-            PlotView plotView = new PlotView
+            var plotView = new PlotView
             {
                 Margin = new Thickness(5, 10, 20, 10),
                 Background = new SolidColorBrush(Color.FromRgb(39, 44, 77)),
-                Name = "plot" + moduleContainer.Name.Last(),
+                Name = "plot" + ModuleContainer.Name.Last(),
                 Model = Model
             };
 
-            moduleContainer.Child = plotView;
+            ModuleContainer.Child = plotView;
         }
 
         public override PlotModel CreateModel()
         {
-            PlotModel model = new PlotModel
+            var model = new PlotModel
             {
                 Title = Title,
                 TitleToolTip = Title,
@@ -99,7 +100,7 @@ namespace Modules
             };
 
             // Set axis colors
-            OxyColor mainColor = OxyColor.FromRgb(152, 147, 218); ;
+            var mainColor = OxyColor.FromRgb(152, 147, 218); ;
 
             xAxis.AxislineColor = mainColor;
             xAxis.TicklineColor = mainColor;
@@ -128,7 +129,7 @@ namespace Modules
             yAxis.FontWeight = OxyPlot.FontWeights.Bold;
 
             // Add legend
-            OxyPlot.Legends.Legend legend = new OxyPlot.Legends.Legend
+            var legend = new OxyPlot.Legends.Legend
             {
                 LegendBackground = new OxyColor()
             };
@@ -150,7 +151,7 @@ namespace Modules
             if (lineSeriesDict.First().Key == seriesName && scroll && (xPoint > xAxis.Maximum))
             {
                 // Finds the viewport offset and adds a -20 transform to it
-                double result = xAxis.Transform(-deltaX + xAxis.Offset);
+                var result = xAxis.Transform(-deltaX + xAxis.Offset);
 
                 xAxis.Pan(result);
             }
@@ -166,10 +167,10 @@ namespace Modules
             {
                 LineStyle = LineStyle.Solid,
                 //InterpolationAlgorithm = InterpolationAlgorithms.CanonicalSpline,// Interpolates between points to make a spline
-                Title = name
+                Title = name,
+                TrackerFormatString = "{0}\nX={2},\nY={4}"
             };
 
-            newSeries.TrackerFormatString = "{0}\nX={2},\nY={4}";
 
             // Add new series to native list
             Model.Series.Add(newSeries);
@@ -181,7 +182,7 @@ namespace Modules
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
-                foreach (var variable in varMap)
+                foreach (var variable in VarMap)
                 {
                     AddPoint(variable.Key, 20, currentFrame, Convert.ToDouble(variable.Value));
                 }

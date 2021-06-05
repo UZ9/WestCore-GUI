@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace Modules
+namespace GUI_WPF_Migration.Modules.Util
 {
-    class ModuleTextBuilder
+    internal class ModuleTextBuilder
     {
-        private TextBlock block;
+        private readonly TextBlock block;
 
         public ModuleTextBuilder()
         {

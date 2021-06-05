@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using OxyPlot;
 
-namespace Modules
+namespace GUI_WPF_Migration.Modules.Charts
 {
     /// <summary>
     /// Contains the main components of a Chart related <see cref="Module"/>.
@@ -33,11 +30,12 @@ namespace Modules
         /// </summary>
         public int MaxRange { get; protected set; }
 
-        public ChartModule(Border moduleContainer) : base(moduleContainer) { }
+        protected ChartModule(Border moduleContainer) : base(moduleContainer) { }
 
         /// <summary>
         /// Initializes a ChartModule's core components
         /// </summary>
+        /// <param name="title">The title of the chart module</param>
         /// <param name="configMap">The configuration data sent through the CONFIG_HEADER</param>
         public override void Initialize(string title, Dictionary<string, object> configMap)
         {

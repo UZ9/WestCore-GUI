@@ -20,7 +20,7 @@ namespace Charts
         /// <summary>
         /// Represents the main states of the <see cref="ChartManager"/> at any given time. 
         /// </summary>
-        public enum Status
+        public enum CmStatus
         {
             Stopped, // The NamedPipe is not currently running
             Loading, // The NamedPipe is being created
@@ -31,22 +31,22 @@ namespace Charts
         }
 
         // Headers are to differentiate normal cout logs from ones sending data to the GUI. Only strings starting with one of these prefixes will be parsed.
-        private const string DATA_HEADER = "GUI_DATA_8378";
-        private const string CONFIG_HEADER = "GUI_DATA_CONF_8378"; // TODO: Move this to an automatically generated value based off of DATA_HEADER
+        private const string DataHeader = "GUI_DATA_8378";
+        private const string ConfigHeader = "GUI_DATA_CONF_8378"; // TODO: Move this to an automatically generated value based off of DATA_HEADER
 
         // An issue encountered when sending huge amounts of configuration data (~1000 characters or more) was the buffer size. The configuration string was being chopped off as it reached the CLI,
         // meaning the JSON would freak out and break. To solve this, data is sent in a group of configuration strings until the CONFIG_END_HEADER is reached, where it is then processed.
-        private const string CONFIG_END_HEADER = "GUI_DATA_CONF_3434_END";
+        private const string ConfigEndHeader = "GUI_DATA_CONF_3434_END";
 
         /// <summary>
         /// The amount of milleseconds elapsed between data packets being sent by the PROS CLI. Used for properly differentiating time on the GUI chart time elements.
         /// </summary>
-        private const int frameIncrement = 20;
+        private const int FrameIncrement = 20;
 
         /// <summary>
         /// Each module is designated with a given module ID. The module ID allows parsed data to go to the appropriate module.
         /// </summary>
-        private Dictionary<string, Module> modules;
+        private readonly Dictionary<string, Module> modules;
 
         /// <summary>
         /// The NamedPipe used to transfer information from the PROS CLI to the GUI application
@@ -59,14 +59,14 @@ namespace Charts
         private BinaryReader streamReader;
 
         /// <summary>
-        /// The current status of the <see cref="ChartManager"/>
+        /// The current CmStatus of the <see cref="ChartManager"/>
         /// </summary>
-        public Status status;
+        public CmStatus Status;
 
         /// <summary>
         /// Reference to main window
         /// </summary>
-        private MainWindow window;
+        private readonly MainWindow window;
 
         /// <summary>
         /// Stores the token source for the chartLoop task
@@ -91,11 +91,11 @@ namespace Charts
         }
 
         /// <summary>
-        /// Creates the NamedPipeServerStream labelled "west-pros-pipe"
+        /// Creates the NamedPipeServerStream labeled "west-pros-pipe"
         /// </summary>
         public void HostPipeServer()
         {
-            status = Status.Loading;
+            Status = CmStatus.Loading;
 
             Console.WriteLine("Creating Named Pipe...");
 
@@ -104,7 +104,7 @@ namespace Charts
             // "west-pros-pipe" - name of pipe
             // PipeDirection.InOut - Allows data to be sent and received
             // 1 - Only 1 client will be able to connect at a time  
-            // PipeTransmissionMode.Byte - Type of data being transfered
+            // PipeTransmissionMode.Byte - Type of data being transferred
             pipeStream = new NamedPipeServerStream("west-pros-pipe", PipeDirection.InOut, 1, PipeTransmissionMode.Byte);
 
             Console.WriteLine("west-core-pipe successfully initialized");
@@ -117,7 +117,7 @@ namespace Charts
         {
             Console.WriteLine("Waiting for connection...");
 
-            status = Status.AwaitingConnection;
+            Status = CmStatus.AwaitingConnection;
 
             // Wait until C++ client connects
             pipeStream.WaitForConnection();
@@ -133,17 +133,15 @@ namespace Charts
         /// </summary>
         public void StartChartLoop()
         {
-            //  The named pipe has been created, we now need to wait until the cONFIG_HEADER is received
-            status = Status.AwaitingConfiguration;
+            //  The named pipe has been created, we now need to wait until the ConfigHeader is received
+            Status = CmStatus.AwaitingConfiguration;
 
-            string configString = "";
+            var configString = "";
 
             chartLoopToken = cancelSource.Token;
 
             Task.Run(() =>
             {
-                int currentFrame = 0;
-
                 while (true) // Continuously pull data from piped server
                 {
                     try
@@ -158,28 +156,23 @@ namespace Charts
                         // If no header/data was found, continue
                         if (!received.HasValue) continue;
 
-                        (string header, string data) = received.Value;
+                        var (header, data) = received.Value;
 
                         try
                         {
 
-                            switch (status)
+                            switch (Status)
                             {
                                 // TODO: Change to JSON formatting
-                                case Status.AwaitingConfiguration:
-                                    if (header == CONFIG_HEADER)
+                                case CmStatus.AwaitingConfiguration:
+                                    if (header == ConfigHeader)
                                     {
-
-
-
-
-
-                                        if (data.TrimEnd().EndsWith(CONFIG_END_HEADER))
+                                        if (data.TrimEnd().EndsWith(ConfigEndHeader))
                                         {
                                             Console.WriteLine("Found config end header");
 
                                             // Keep appending to the config string until all data has been received (see comments on CONFIG_END_HEADER)
-                                            configString += data.Substring(0, data.Length - CONFIG_END_HEADER.Length - 1);
+                                            configString += data.Substring(0, data.Length - ConfigEndHeader.Length - 1);
 
                                             Console.WriteLine("End config string:");
                                             Console.WriteLine(configString);
@@ -193,7 +186,7 @@ namespace Charts
                                                 // Value: Config map for module
                                                 string type = modulePair.Value["module-type"] as string;
 
-                                                Module newModule = CreateModule(type);
+                                                var newModule = CreateModule(type);
 
                                                 modules.Add(modulePair.Key, newModule);
 
@@ -216,7 +209,7 @@ namespace Charts
                                             }
 
                                             // All modules have now been configured, switch to operational
-                                            status = Status.Operational;
+                                            Status = CmStatus.Operational;
                                         }
                                         else
                                         {
@@ -226,9 +219,9 @@ namespace Charts
 
                                     }
                                     break;
-                                case Status.Operational:
+                                case CmStatus.Operational:
                                     // Connections have been fully established, fetch data and update information
-                                    if (header == DATA_HEADER)
+                                    if (header == DataHeader)
                                     {
 
                                         var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
@@ -255,35 +248,27 @@ namespace Charts
                         }
                         catch (JsonReaderException e)
                         {
-                            Console.WriteLine("Experienced JSONREADEREXCEPTION");
                             Console.WriteLine(e);
-                            Console.WriteLine("Json in question:");
-                            Console.WriteLine(data);
                         }
                     }
                     catch (EndOfStreamException)
                     {
                         Console.WriteLine("Reached end of stream, ending...");
-                        status = Status.Stopping;
+                        Status = CmStatus.Stopping;
                         break;
                     }
-
-                    currentFrame += frameIncrement;
                 }
 
                 // Lost connection, dispose of any ongoing streams and exit the program
                 streamReader.Close();
                 streamReader.Dispose();
 
-                status = Status.Stopped;
+                Status = CmStatus.Stopped;
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     Application.Current.Shutdown();
                 });
             }, chartLoopToken);
-
-
-
         }
 
         /// <summary>
@@ -315,7 +300,7 @@ namespace Charts
         /// <returns>Both the JSON data string and header string</returns>
         public (string, string)? ParseReceivedData(string rawString)
         {
-            string[] rawStringArr = rawString.Split('|');
+            var rawStringArr = rawString.Split('|');
 
             // We need to have at least 2 elements when splitting off of '|'. 
             if (rawStringArr.Length != 2)
@@ -326,11 +311,11 @@ namespace Charts
             }
 
             // Split between the header and the actual JSON data
-            string header = rawStringArr[0];
-            string data = rawStringArr[1];
+            var header = rawStringArr[0];
+            var data = rawStringArr[1];
 
             // Make sure every segment of the file header isn't empty
-            if (rawStringArr.Where(s => s.Length == 0).Any()) return null;
+            if (rawStringArr.Any(s => s.Length == 0)) return null;
 
             return (header, data);
         }

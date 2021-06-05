@@ -1,18 +1,14 @@
-﻿using GUI_WPF_Migration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Shapes;
+using GUI_WPF_Migration.Modules.Util;
 
-namespace Modules
+namespace GUI_WPF_Migration.Modules.Movement
 {
     public class OdometryModule : Module
     {
@@ -34,7 +30,7 @@ namespace Modules
         private Run rightEncoderText;
         private Run midEncoderText;
 
-        Random random;
+        private Random random;
 
         public OdometryModule(Border moduleContainer) : base(moduleContainer) { }
 
@@ -54,9 +50,9 @@ namespace Modules
         public override void Update()
         {
             // Update robot position with new position values
-            robotX = Convert.ToDouble(varMap["x"]);
-            robotY = Convert.ToDouble(varMap["y"]);
-            robotHeading = Convert.ToDouble(varMap["heading"]);
+            robotX = Convert.ToDouble(VarMap["x"]);
+            robotY = Convert.ToDouble(VarMap["y"]);
+            robotHeading = Convert.ToDouble(VarMap["heading"]);
 
             UpdateRobotPosition();
         }
@@ -72,17 +68,17 @@ namespace Modules
 
 
             // Align to container's grid
-            odomGrid.SetValue(Grid.RowProperty, moduleContainer.GetValue(Grid.RowProperty));
-            odomGrid.SetValue(Grid.ColumnProperty, moduleContainer.GetValue(Grid.ColumnProperty));
+            odomGrid.SetValue(Grid.RowProperty, ModuleContainer.GetValue(Grid.RowProperty));
+            odomGrid.SetValue(Grid.ColumnProperty, ModuleContainer.GetValue(Grid.ColumnProperty));
 
             // 6 Tiles in a field
-            for (int i = 0; i < 6; i++)
+            for (var i = 0; i < 6; i++)
             {
                 odomGrid.ColumnDefinitions.Add(new ColumnDefinition());
                 odomGrid.RowDefinitions.Add(new RowDefinition());
             }
 
-            moduleContainer.Child = odomGrid;
+            ModuleContainer.Child = odomGrid;
 
             odomGridBorder = new Border()
             {
@@ -108,9 +104,9 @@ namespace Modules
             odomGrid.Children.Add(odomGridBorder);
 
             // Generate odometry grid
-            for (int x = 0; x < odomGrid.RowDefinitions.Count; x++)
+            for (var x = 0; x < odomGrid.RowDefinitions.Count; x++)
             {
-                for (int y = 0; y < odomGrid.ColumnDefinitions.Count; y++)
+                for (var y = 0; y < odomGrid.ColumnDefinitions.Count; y++)
                 {
                     odomGrid.Children.Add(GenerateGridTile(x, y));
                 }
@@ -118,21 +114,21 @@ namespace Modules
         }
 
         /// <summary>
-        /// Creates and alligns all TextBlocks used in the <see cref="OdometryModule"/>
+        /// Creates and aligns all TextBlocks used in the <see cref="OdometryModule"/>
         /// </summary>
         private void CreateOdomText()
         {
-            TextBlock location = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Subtitle)
+            var location = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Subtitle)
                 .WithMargin(367, 50, 41, 10)
                 .WithColor("#ededed")
                 .WithFont(28.5)
-                .WithGridLocation((int)moduleContainer.GetValue(Grid.RowProperty), (int)moduleContainer.GetValue(Grid.ColumnProperty))
+                .WithGridLocation((int)ModuleContainer.GetValue(Grid.RowProperty), (int)ModuleContainer.GetValue(Grid.ColumnProperty))
                 .WithRenderTransformOrigin(1.13, 0.722)
                 .WithText("Location")
                 .Build();
-            TextBlock positionContainer = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Paragraph)
+            var positionContainer = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Paragraph)
                 .WithMargin(367, 93, 41, 20)
-                .WithGridLocation((int)moduleContainer.GetValue(Grid.RowProperty), (int)moduleContainer.GetValue(Grid.ColumnProperty))
+                .WithGridLocation((int)ModuleContainer.GetValue(Grid.RowProperty), (int)ModuleContainer.GetValue(Grid.ColumnProperty))
                 //.WithGridSpan(2, 1)
                 .Build();
 
@@ -142,16 +138,16 @@ namespace Modules
             positionContainer.Inlines.Add(positionText);
             positionContainer.Inlines.Add(angleText);
 
-            TextBlock encoderValues = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Subtitle)
+            var encoderValues = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Subtitle)
                 .WithMargin(367, 195, 41, 20)
                 .WithFont(28.5)
-                .WithGridLocation((int)moduleContainer.GetValue(Grid.RowProperty), (int)moduleContainer.GetValue(Grid.ColumnProperty))
+                .WithGridLocation((int)ModuleContainer.GetValue(Grid.RowProperty), (int)ModuleContainer.GetValue(Grid.ColumnProperty))
                 //.WithGridSpan(2, 1)
                 .WithText("Encoder Values")
                 .Build();
 
-            TextBlock encoderContainer = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Paragraph)
-                .WithGridLocation((int)moduleContainer.GetValue(Grid.RowProperty), (int)moduleContainer.GetValue(Grid.ColumnProperty))
+            var encoderContainer = ModuleTextFactory.GetTextBuilderTemplate(ModuleTextFactory.TextType.Paragraph)
+                .WithGridLocation((int)ModuleContainer.GetValue(Grid.RowProperty), (int)ModuleContainer.GetValue(Grid.ColumnProperty))
                 //.WithGridSpan(2, 1)
                 .WithMargin(367, 238, 41, 20)
                 .Build();
@@ -164,7 +160,7 @@ namespace Modules
             encoderContainer.Inlines.Add(rightEncoderText);
             encoderContainer.Inlines.Add(midEncoderText);
 
-            Grid moduleGrid = MainWindow.instance.moduleGrid;
+            var moduleGrid = MainWindow.Instance.moduleGrid;
 
             moduleGrid.Children.Add(location);
             moduleGrid.Children.Add(positionContainer);
@@ -177,21 +173,23 @@ namespace Modules
         /// </summary>
         private void CreateRobot()
         {
-            Border robotBorder = new Border();
+            var robotBorder = new Border();
             //robotBorder.Margin = new Thickness(1);
             robotBorder.SetValue(Grid.RowSpanProperty, 6);
             robotBorder.SetValue(Grid.ColumnSpanProperty, 6);
 
             odomGrid.Children.Add(robotBorder);
 
-            robotIcon = new Ellipse();
-            robotIcon.Height = 15;
-            robotIcon.Width = 15;
-            robotIcon.Stroke = new SolidColorBrush(Color.FromRgb(39, 43, 77)); //new SolidColorBrush(Color.FromRgb(189, 189, 189));
-            robotIcon.StrokeThickness = 1;
-            robotIcon.Fill = new SolidColorBrush(Color.FromRgb(186, 86, 90));
-            robotIcon.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-            robotIcon.VerticalAlignment = System.Windows.VerticalAlignment.Top;
+            robotIcon = new Ellipse
+            {
+                Height = 15,
+                Width = 15,
+                Stroke = new SolidColorBrush(Color.FromRgb(39, 43, 77)),
+                StrokeThickness = 1,
+                Fill = new SolidColorBrush(Color.FromRgb(186, 86, 90)),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top
+            };
 
             robotX = 4;
             robotY = 4;
@@ -206,8 +204,7 @@ namespace Modules
             odomGrid.Children.Add(arrowBorder);
 
             // Create arrow polygon
-            robotArrow = new Polygon();
-            robotArrow.Fill = new SolidColorBrush(Color.FromRgb(186, 86, 90));
+            robotArrow = new Polygon { Fill = new SolidColorBrush(Color.FromRgb(186, 86, 90)) };
 
             arrowBorder.Child = robotArrow;
 
@@ -220,7 +217,7 @@ namespace Modules
         /// </summary>
         private void UpdateRobotPosition()
         {
-            (double guiX, double guiY) = PosToGuiMargin(robotX, robotY);
+            var (guiX, guiY) = PosToGuiMargin(robotX, robotY);
 
             positionText.Text = $"Position: ({Math.Round(robotX, 1):0.0}, {Math.Round(robotY, 1):0.0})\n";
             angleText.Text = $"Angle: {Math.Round(robotHeading, 1)}°";
@@ -228,13 +225,13 @@ namespace Modules
             // Adjust margin
             robotIcon.Margin = new Thickness(guiX, guiY, 0, 0);
 
-            (double currentX, double currentY) = PosToGuiMargin(robotX, robotY);
+            var (currentX, currentY) = PosToGuiMargin(robotX, robotY);
 
             // Convert heading to radians
-            double radianHeading = ((robotHeading - 90) * Math.PI) / 180.0;
+            var radianHeading = ((robotHeading - 90) * Math.PI) / 180.0;
 
-            double xOffset = Math.Cos(radianHeading) * 30;
-            double yOffset = Math.Sin(radianHeading) * 30; // Because coordinates are starting from the top left, switch the y coordinate
+            var xOffset = Math.Cos(radianHeading) * 30;
+            var yOffset = Math.Sin(radianHeading) * 30; // Because coordinates are starting from the top left, switch the y coordinate
 
             var points = CreateLineWithArrowPointCollection(new Point(currentX + 7.5, currentY + 7.5), new Point(currentX + xOffset + (xOffset * 0.7) + 7.5, currentY + yOffset + (yOffset * 0.7) + 7.5), 2);
 
@@ -253,9 +250,9 @@ namespace Modules
         {
             // Original color
             // 125, 132, 124
-            Color color = Color.FromRgb(58 * 2, 64 * 2, 112 * 2);
+            var color = Color.FromRgb(58 * 2, 64 * 2, 112 * 2);
 
-            double randomCoefficient = random.NextDouble() * 0.05 + 0.9;
+            var randomCoefficient = random.NextDouble() * 0.05 + 0.9;
 
             // Add random bit of brightness modification
             return Color.FromRgb((byte)(color.R * randomCoefficient), (byte)(color.G * randomCoefficient), (byte)(color.B * randomCoefficient));
@@ -269,7 +266,7 @@ namespace Modules
         /// <returns>A <see cref="Border"/> WPF element containing a colored rectangle and border</returns>
         private Border GenerateGridTile(int row, int column)
         {
-            Border border = new Border();
+            var border = new Border();
 
             border.SetValue(Grid.RowProperty, row);
             border.SetValue(Grid.ColumnProperty, column);
@@ -291,9 +288,7 @@ namespace Modules
         /// <returns>A <see cref="Rectangle"/> WPF element representing the tile's fill</returns>
         private Rectangle GenerateGridRectangle(int row, int column)
         {
-            Rectangle rectangle = new Rectangle();
-
-            rectangle.Fill = new SolidColorBrush(GetGridRectangleColor());
+            var rectangle = new Rectangle { Fill = new SolidColorBrush(GetGridRectangleColor()) };
 
             rectangle.SetValue(Grid.RowProperty, row);
             rectangle.SetValue(Grid.ColumnProperty, column);
@@ -314,34 +309,41 @@ namespace Modules
             // Full width: odomGrid.Width - 8 (the 8 is the border)
             // Because the grid is a square, we don't have to worry about the grid size being different for each axis
             // Field: 6 tiles in length/width
-            double conversionFactor = odomGrid.Width / 6.0;
+            var conversionFactor = odomGrid.Width / 6.0;
 
             return (x * conversionFactor - 7.5, y * conversionFactor - 7.5);
         }
 
-        private const double _maxArrowLengthPercent = 0.3; // factor that determines how the arrow is shortened for very short lines
-        private const double _lineArrowLengthFactor = 3.73205081; // 15 degrees arrow:  = 1 / Math.Tan(15 * Math.PI / 180); 
+        private const double MaxArrowLengthPercent = 0.3; // factor that determines how the arrow is shortened for very short lines
+        private const double LineArrowLengthFactor = 3.73205081; // 15 degrees arrow:  = 1 / Math.Tan(15 * Math.PI / 180); 
 
+        /// <summary>
+        /// Creates an arrow between two points
+        /// </summary>
+        /// <param name="startPoint">The origin to base the arrow off of</param>
+        /// <param name="endPoint">The end point of the arrow. This will determine the direction the arrow is facing.</param>
+        /// <param name="lineWidth">The width of the arrow</param>
+        /// <returns></returns>
         public static PointCollection CreateLineWithArrowPointCollection(Point startPoint, Point endPoint, double lineWidth)
         {
-            Vector direction = endPoint - startPoint;
+            var direction = endPoint - startPoint;
 
-            Vector normalizedDirection = direction;
+            var normalizedDirection = direction;
             normalizedDirection.Normalize();
 
-            Vector normalizedlineWidenVector = new Vector(-normalizedDirection.Y, normalizedDirection.X); // Rotate by 90 degrees
-            Vector lineWidenVector = normalizedlineWidenVector * lineWidth * 0.5;
+            var normalizedlineWidenVector = new Vector(-normalizedDirection.Y, normalizedDirection.X); // Rotate by 90 degrees
+            var lineWidenVector = normalizedlineWidenVector * lineWidth * 0.5;
 
-            double lineLength = direction.Length;
+            var lineLength = direction.Length;
 
-            double defaultArrowLength = lineWidth * _lineArrowLengthFactor;
+            var defaultArrowLength = lineWidth * LineArrowLengthFactor;
 
             // Prepare usedArrowLength
             // if the length is bigger than 1/3 (_maxArrowLengthPercent) of the line length adjust the arrow length to 1/3 of line length
 
             double usedArrowLength;
-            if (lineLength * _maxArrowLengthPercent < defaultArrowLength)
-                usedArrowLength = lineLength * _maxArrowLengthPercent;
+            if (lineLength * MaxArrowLengthPercent < defaultArrowLength)
+                usedArrowLength = lineLength * MaxArrowLengthPercent;
             else
                 usedArrowLength = defaultArrowLength;
 
@@ -354,13 +356,13 @@ namespace Modules
             else
                 arrowWidthFactor = 1.5 * lineWidth;
 
-            Vector arrowWidthVector = normalizedlineWidenVector * arrowWidthFactor;
+            var arrowWidthVector = normalizedlineWidenVector * arrowWidthFactor;
 
 
             // Now we have all the vectors so we can create the arrow shape positions
             var pointCollection = new PointCollection(7);
 
-            Point endArrowCenterPosition = endPoint - (normalizedDirection * usedArrowLength);
+            var endArrowCenterPosition = endPoint - (normalizedDirection * usedArrowLength);
 
             pointCollection.Add(endPoint); // Start with tip of the arrow
             pointCollection.Add(endArrowCenterPosition + arrowWidthVector);
