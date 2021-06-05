@@ -34,8 +34,8 @@ namespace Charts
         private const string DATA_HEADER = "GUI_DATA_8378";
         private const string CONFIG_HEADER = "GUI_DATA_CONF_8378"; // TODO: Move this to an automatically generated value based off of DATA_HEADER
 
-        // An issue encountered when senting huge amounts of configuration date (~1000 characters or more) was the buffer size. The configuration string was being chopped off as it reached the CLI,
-        // meaning the JSON would freak otu and break. To solve this, data is sent in a group of configuration strings until the CONFIG_END_HEADER is reached, where it is then processed.
+        // An issue encountered when sending huge amounts of configuration data (~1000 characters or more) was the buffer size. The configuration string was being chopped off as it reached the CLI,
+        // meaning the JSON would freak out and break. To solve this, data is sent in a group of configuration strings until the CONFIG_END_HEADER is reached, where it is then processed.
         private const string CONFIG_END_HEADER = "GUI_DATA_CONF_3434_END";
 
         /// <summary>

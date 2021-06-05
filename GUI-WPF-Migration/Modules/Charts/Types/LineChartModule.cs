@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -16,6 +17,11 @@ namespace Modules
 
     public class LineChartModule : ChartModule
     {
+        /// <summary>
+        /// The fresh time for the chart to update (in milliseconds)
+        /// </summary>
+        private int refreshTime;
+
         private LinearAxis xAxis;
         private LinearAxis yAxis;
 
@@ -36,6 +42,10 @@ namespace Modules
 
             scroll = Convert.ToBoolean(configMap["scroll"]);
 
+            refreshTime = Convert.ToInt32(configMap["refresh-rate"]);
+
+            Console.WriteLine("Registered a line chart module with a fresh rate of " + refreshTime);
+
             lineSeriesDict = new Dictionary<string, LineSeries>();
 
             // Retrieve a list of every series name
@@ -53,16 +63,13 @@ namespace Modules
             // Add PlotView to window & set properties
             PlotView plotView = new PlotView
             {
-                Margin = new System.Windows.Thickness(5, 10, 20, 10),
+                Margin = new Thickness(5, 10, 20, 10),
                 Background = new SolidColorBrush(Color.FromRgb(39, 44, 77)),
                 Name = "plot" + moduleContainer.Name.Last(),
                 Model = Model
             };
 
             moduleContainer.Child = plotView;
-
-
-
         }
 
         public override PlotModel CreateModel()
@@ -114,11 +121,11 @@ namespace Modules
             // Set fonts
             model.DefaultFont = "Nirmala UI";
             model.DefaultFontSize = 10;
-            model.TitleFontWeight = FontWeights.Bold;
+            model.TitleFontWeight = OxyPlot.FontWeights.Bold;
             model.TextColor = OxyColor.FromRgb(255, 255, 255);
 
-            xAxis.FontWeight = FontWeights.Bold;
-            yAxis.FontWeight = FontWeights.Bold;
+            xAxis.FontWeight = OxyPlot.FontWeights.Bold;
+            yAxis.FontWeight = OxyPlot.FontWeights.Bold;
 
             // Add legend
             OxyPlot.Legends.Legend legend = new OxyPlot.Legends.Legend
@@ -148,7 +155,9 @@ namespace Modules
                 xAxis.Pan(result);
             }
 
-            Model.InvalidatePlot(false);
+            // Apply refresh rate
+            if (currentFrame % refreshTime == 0)
+                Model.InvalidatePlot(false);
         }
 
         private void AddSeries(string name)
@@ -170,10 +179,14 @@ namespace Modules
 
         public override void Update()
         {
-            foreach (var variable in varMap)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                AddPoint(variable.Key, 20, currentFrame, Convert.ToDouble(variable.Value));
-            }
+                foreach (var variable in varMap)
+                {
+                    AddPoint(variable.Key, 20, currentFrame, Convert.ToDouble(variable.Value));
+                }
+            });
+
 
             currentFrame += 20;
         }
