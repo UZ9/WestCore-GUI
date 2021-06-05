@@ -69,11 +69,6 @@ namespace Charts
         private MainWindow window;
 
         /// <summary>
-        /// Main task containing the chart loop code
-        /// </summary>
-        private Task chartLoop;
-
-        /// <summary>
         /// Stores the token source for the chartLoop task
         /// </summary>
         private CancellationTokenSource cancelSource = new CancellationTokenSource();
@@ -115,6 +110,9 @@ namespace Charts
             Console.WriteLine("west-core-pipe successfully initialized");
         }
 
+        /// <summary>
+        /// Blocks the main thread until a successful connection to the <see cref="NamedPipeServerStream"/>.
+        /// </summary>
         public void AwaitPipeConnection()
         {
             Console.WriteLine("Waiting for connection...");
@@ -310,6 +308,11 @@ namespace Charts
             return newModule;
         }
 
+        /// <summary>
+        /// Parses a string into tis header and data components
+        /// </summary>
+        /// <param name="rawString">A JSON string along with a heading prefix</param>
+        /// <returns>Both the JSON data string and header string</returns>
         public (string, string)? ParseReceivedData(string rawString)
         {
             string[] rawStringArr = rawString.Split('|');

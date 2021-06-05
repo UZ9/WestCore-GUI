@@ -13,6 +13,7 @@ using System.Windows.Media;
 
 namespace Modules
 {
+
     public class LineChartModule : ChartModule
     {
         private LinearAxis xAxis;
@@ -77,8 +78,8 @@ namespace Modules
                 Position = AxisPosition.Left,
                 Maximum = MaxRange,
                 Minimum = MinRange,
-                AbsoluteMaximum = MaxRange,
-                AbsoluteMinimum = MinRange,
+                //AbsoluteMaximum = MaxRange,
+                //AbsoluteMinimum = MinRange,
                 //IsZoomEnabled = false
             };
 
@@ -120,8 +121,10 @@ namespace Modules
             yAxis.FontWeight = FontWeights.Bold;
 
             // Add legend
-            OxyPlot.Legends.Legend legend = new OxyPlot.Legends.Legend();
-            legend.LegendBackground = new OxyColor();
+            OxyPlot.Legends.Legend legend = new OxyPlot.Legends.Legend
+            {
+                LegendBackground = new OxyColor()
+            };
 
             model.Legends.Add(legend);
 
@@ -145,9 +148,7 @@ namespace Modules
                 xAxis.Pan(result);
             }
 
-
-            // Marks the chart for reconstruction
-            Model.InvalidatePlot(true);
+            Model.InvalidatePlot(false);
         }
 
         private void AddSeries(string name)
@@ -155,7 +156,7 @@ namespace Modules
             LineSeries newSeries = new LineSeries
             {
                 LineStyle = LineStyle.Solid,
-                InterpolationAlgorithm = InterpolationAlgorithms.CanonicalSpline,// Interpolates between points to make a spline
+                //InterpolationAlgorithm = InterpolationAlgorithms.CanonicalSpline,// Interpolates between points to make a spline
                 Title = name
             };
 
