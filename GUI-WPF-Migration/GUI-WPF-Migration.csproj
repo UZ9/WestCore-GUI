@@ -130,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Modules\Charts\ChartModule.cs" />
+    <Compile Include="Modules\Charts\Types\BarChartModule.cs" />
     <Compile Include="Modules\Charts\Types\LineChartModule.cs" />
     <Compile Include="Modules\Module.cs" />
     <Compile Include="Modules\Movement\OdometryModule.cs" />

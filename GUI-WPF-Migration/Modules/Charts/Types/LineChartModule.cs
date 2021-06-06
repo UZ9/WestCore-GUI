@@ -1,19 +1,15 @@
-﻿using GUI_WPF_Migration;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using OxyPlot.SkiaSharp.Wpf;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using GUI_WPF_Migration.Modules.Charts;
 
-namespace Modules
+namespace GUI_WPF_Migration.Modules.Charts.Types
 {
 
     public class LineChartModule : ChartModule
@@ -44,8 +40,6 @@ namespace Modules
             scroll = Convert.ToBoolean(configMap["scroll"]);
 
             refreshTime = Convert.ToInt32(configMap["refresh-rate"]);
-
-            Console.WriteLine("Registered a line chart module with a fresh rate of " + refreshTime);
 
             lineSeriesDict = new Dictionary<string, LineSeries>();
 

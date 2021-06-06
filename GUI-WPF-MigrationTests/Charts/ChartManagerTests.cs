@@ -72,7 +72,7 @@ namespace Charts.Tests
 
             var chartManagerPo = new PrivateObject(chartManager);
 
-            Assert.AreEqual((ChartManager.CmStatus)chartManagerPo.GetField("CmStatus"), ChartManager.CmStatus.Loading);
+            Assert.AreEqual((ChartManager.CmStatus)chartManagerPo.GetField("Status"), ChartManager.CmStatus.Loading);
 
             chartManager.Dispose();
         }

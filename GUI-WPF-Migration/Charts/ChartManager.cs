@@ -1,5 +1,4 @@
 ﻿using GUI_WPF_Migration;
-using Modules;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using GUI_WPF_Migration.Modules;
+using GUI_WPF_Migration.Modules.Charts.Types;
+using GUI_WPF_Migration.Modules.Movement;
 
 namespace Charts
 {
@@ -231,7 +233,7 @@ namespace Charts
                                             foreach (var modulePair in json)
                                             {
                                                 // Update module's data
-                                                modules[modulePair.Key].varMap = modulePair.Value;
+                                                modules[modulePair.Key].VarMap = modulePair.Value;
 
 
                                                 // Call update event for module
@@ -287,6 +289,9 @@ namespace Charts
                     break;
                 case "odometry":
                     newModule = new OdometryModule(window.ModuleSlots.Dequeue());
+                    break;
+                case "barchart":
+                    newModule = new BarChartModule(window.ModuleSlots.Dequeue());
                     break;
             }
 
