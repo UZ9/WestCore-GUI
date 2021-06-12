@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GUI_WPF_Migration
 {
@@ -14,10 +15,10 @@ namespace GUI_WPF_Migration
 
         public static MainWindow Instance;
 
-        private readonly ChartManager chartManager;
+        public readonly ChartManager ChartManager;
 
         /// <summary>
-        /// Queue for the <see cref="ChartManager"/> to pull out of for module creation.
+        /// Queue for the <see cref="Charts.ChartManager"/> to pull out of for module creation.
         /// </summary>
         public Queue<Border> ModuleSlots { get; set; }
 
@@ -32,14 +33,14 @@ namespace GUI_WPF_Migration
 
             ModuleSlots = new Queue<Border>(currentBorders);
 
-            chartManager = new ChartManager(this);
+            ChartManager = new ChartManager(this);
 
             try
             {
 
-                chartManager.HostPipeServer();
-                chartManager.AwaitPipeConnection();
-                chartManager.StartChartLoop();
+                ChartManager.HostPipeServer();
+                ChartManager.AwaitPipeConnection();
+                ChartManager.StartChartLoop();
 
             }
             catch (Exception e)
@@ -52,14 +53,16 @@ namespace GUI_WPF_Migration
 
 
             //Task.Run(Loop);
+
+
         }
 
         /// <summary>
-        /// When the application is signaled it's about to be closed, make sure everything has been disposed in the <see cref="ChartManager"/>
+        /// When the application is signaled it's about to be closed, make sure everything has been disposed in the <see cref="Charts.ChartManager"/>
         /// </summary>
         public void Window_Close(object sender, CancelEventArgs e)
         {
-            chartManager?.Dispose();
+            ChartManager?.Dispose();
         }
 
 

@@ -1,39 +1,71 @@
 ﻿<Window x:Class="GUI_WPF_Migration.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:oxy="http://oxyplot.org/skiawpf"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        Closing="Window_Close"
-        WindowStyle="None"
-        WindowState="Maximized"
-        ResizeMode="NoResize"
-        AllowsTransparency="True"
-        mc:Ignorable="d"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:oxy="http://oxyplot.org/skiawpf"
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+            xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+            xmlns:guiWpfMigration="clr-namespace:GUI_WPF_Migration"
+            Closing="Window_Close"
+            WindowStyle="None"
+            WindowState="Maximized"
+            ResizeMode="NoResize"
+            AllowsTransparency="True"
+            mc:Ignorable="d"
         
-        Title="MainWindow" Height="1080" Width="1920">
+            Title="MainWindow" Height="1080" Width="1920">
+
     <!--<TextBlock DockPanel.Dock="Bottom" Margin="8" Text="Hello there!"></TextBlock>-->
-    <Grid x:Name="moduleGrid" HorizontalAlignment="Left" Height="1080" VerticalAlignment="Top" Width="1920" Background="#FF1B203A">
+    <Grid x:Name="moduleGrid" HorizontalAlignment="Left" Height="1080" VerticalAlignment="Top" Width="1920" Background="#111217" ZIndex="1">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Border x:Name="slot1" Grid.Row ="0" Grid.Column="0" Margin="10" CornerRadius="10 10 10 10" Background="#FF272B4D">
+        <Border BorderThickness="2"  BorderBrush="#1c1f23" x:Name="slot1"  Grid.Row ="0" Grid.Column="0" Margin="5" CornerRadius="5" Background="#181b1f">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
             </Border.Effect>
-
+            <!--<Button></Button>-->
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot1" Model="{Binding charts[0]}"/>-->
         </Border>
 
-        <Border x:Name="slot2" Grid.Row ="0" Grid.Column="1" Margin="10" CornerRadius="10 10 10 10" Background="#FF272B4D">
+
+        <!--<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" FlowDirection="RightToLeft" ZIndex="1000">
+
+            <Border Margin="15" VerticalAlignment="Top">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
+                </Border.Effect>
+                <Border.Style>
+                    <Style>
+                        <Setter Property="Border.Background" Value="Blue"></Setter>
+                        <Style.Triggers>
+                            <Trigger Property="Border.IsMouseOver" Value="True">
+                                <Setter Property="Border.Background" Value="Green" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <iconPacks:PackIconOcticons Foreground="White" Kind="Sync" Height="30" Width="30" Margin="5"/>
+            </Border>
+            -->
+        <!--<iconPacks:PackIconOcticons Foreground="White" Kind="Sync" Height="30" Width="30" Margin="10,10,0,0"/>-->
+        <!--
+        </StackPanel>-->
+
+
+
+
+
+
+        <Border BorderThickness="2"  BorderBrush="#1c1f23" x:Name="slot2" Grid.Row ="0" Grid.Column="1" Margin="5" CornerRadius="5" Background="#181b1f">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
             </Border.Effect>
@@ -41,7 +73,7 @@
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot2" Model="{Binding Path=charts[1]}"/>-->
         </Border>
 
-        <Border x:Name="slot3" Grid.Row ="0" Grid.Column="2" Margin="10" CornerRadius="10 10 10 10" Background="#FF272B4D">
+        <Border  BorderThickness="2"  BorderBrush="#1c1f23" x:Name="slot3" Grid.Row ="0" Grid.Column="2" Margin="5" CornerRadius="5" Background="#181b1f">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
             </Border.Effect>
@@ -49,15 +81,54 @@
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot3" Model="{Binding Path=charts[2]}"/>-->
         </Border>
 
-        <Border x:Name="slot4" Grid.Row ="1" Grid.Column="0" Margin="10" CornerRadius="10 10 10 10" Background="#FF272B4D">
+        <Border BorderThickness="2"  BorderBrush="#1c1f23" x:Name="slot4" Grid.Row ="1" Grid.Column="0" Margin="5" CornerRadius="5" Background="#181b1f">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
             </Border.Effect>
 
+            <!--<Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+
+                <Border Background="Red" CornerRadius="10 0 0 0" />
+                <Border BorderBrush="Red" Grid.Row="0" Grid.Column="1" Background="Red" />
+                <Border BorderBrush="LightGreen" Grid.Column="1" Grid.Row="1" Background="LimeGreen" />
+                <Border BorderBrush="Red" Grid.Column="0" Grid.Row="1" Background="Red" CornerRadius="0 0 0 10" />
+                <Border BorderBrush="LightGreen" Grid.Column="2" Grid.Row="1" Background="LimeGreen" CornerRadius="0 0 10 0" />
+                <Border BorderBrush="LightGreen" Grid.Column="2" Grid.Row="0" Background="LimeGreen" CornerRadius="0 10 0 0" />
+
+                <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock FontSize="35" Foreground="#ededed">topLeft</TextBlock>
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock FontSize="35" Foreground="#ededed">topRight</TextBlock>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock FontSize="35" Foreground="#ededed">bottomLeft</TextBlock>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock FontSize="35" Foreground="#ededed">someBool</TextBlock>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock FontSize="35" Foreground="#ededed">topLeft</TextBlock>
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock FontSize="35" Foreground="#ededed">anotherBool</TextBlock>
+                </StackPanel>
+            </Grid>-->
+
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot4" Model="{Binding Path=charts[3]}"/>-->
         </Border>
 
-        <Border x:Name="slot5" Grid.Row ="1" Grid.Column="1" Margin="10" CornerRadius="10 10 10 10" Background="#FF272B4D">
+        <Border BorderThickness="2"  BorderBrush="#1c1f23" x:Name="slot5" Grid.Row ="1" Grid.Column="1" Margin="5" CornerRadius="5" Background="#181b1f">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
             </Border.Effect>
@@ -134,7 +205,7 @@
 
 
 
-        <Border x:Name="slot6"  Grid.Row ="1" Grid.Column="2" Margin="10" CornerRadius="10 10 10 10" Background="#FF272B4D">
+        <Border x:Name="slot6" BorderThickness="2"  BorderBrush="#1c1f23" Grid.Row ="1" Grid.Column="2" Margin="5" CornerRadius="5" Background="#181b1f">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
             </Border.Effect>
@@ -142,7 +213,7 @@
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot6" Model="{Binding Path=charts[5]}"/>-->
         </Border>
 
-        <Border x:Name="slot7" Grid.Row ="2" Grid.Column="0" Margin="10" CornerRadius="10 10 10 10" Background="#FF272B4D">
+        <Border x:Name="slot7" BorderThickness="2"  BorderBrush="#1c1f23" Grid.Row ="2" Grid.Column="0" Margin="5" CornerRadius="5" Background="#181b1f">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
             </Border.Effect>
@@ -150,7 +221,7 @@
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot7" Model="{Binding Path=charts[6]}"/>-->
         </Border>
 
-        <Border x:Name="slot8" Grid.Row ="2" Grid.Column="1" Margin="10" CornerRadius="10 10 10 10" Background="#FF272B4D">
+        <Border x:Name="slot8" BorderThickness="2"  BorderBrush="#1c1f23" Grid.Row ="2" Grid.Column="1" Margin="5" CornerRadius="5" Background="#181b1f">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
             </Border.Effect>
@@ -158,7 +229,7 @@
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot8" Model="{Binding Path=charts[7]}"/>-->
         </Border>
 
-        <Border x:Name="slot9" Grid.Row ="2" Grid.Column="2" Margin="10" CornerRadius="10 10 10 10" Background="#FF272B4D">
+        <Border x:Name="slot9" BorderThickness="2"  BorderBrush="#1c1f23" Grid.Row ="2" Grid.Column="2" Margin="5" CornerRadius="5" Background="#181b1f">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
             </Border.Effect>

@@ -82,7 +82,7 @@ namespace GUI_WPF_Migration.Modules.Movement
 
             odomGridBorder = new Border()
             {
-                BorderBrush = new SolidColorBrush(Color.FromRgb(39, 43, 77)),
+                BorderBrush = new SolidColorBrush(ColorPallete.ChartGridLineColor),
                 Margin = new Thickness(1),
                 BorderThickness = new Thickness(1),
                 CornerRadius = new CornerRadius(2)
@@ -250,9 +250,9 @@ namespace GUI_WPF_Migration.Modules.Movement
         {
             // Original color
             // 125, 132, 124
-            var color = Color.FromRgb(58 * 2, 64 * 2, 112 * 2);
+            var color = ColorPallete.BackgroundColor;
 
-            var randomCoefficient = random.NextDouble() * 0.05 + 0.9;
+            var randomCoefficient = random.NextDouble() * 0.05 + 0.95;
 
             // Add random bit of brightness modification
             return Color.FromRgb((byte)(color.R * randomCoefficient), (byte)(color.G * randomCoefficient), (byte)(color.B * randomCoefficient));
@@ -273,7 +273,7 @@ namespace GUI_WPF_Migration.Modules.Movement
 
             border.BorderThickness = new Thickness(1);
 
-            border.BorderBrush = new SolidColorBrush(Color.FromRgb(39, 43, 77));//new SolidColorBrush(Color.FromRgb(189, 189, 189));//Color.FromRgb(93, 99, 149));
+            border.BorderBrush = new SolidColorBrush(ColorPallete.ChartGridLineColor);//new SolidColorBrush(Color.FromRgb(189, 189, 189));//Color.FromRgb(93, 99, 149));
 
             border.Child = GenerateGridRectangle(row, column);
 

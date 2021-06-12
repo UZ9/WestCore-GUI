@@ -48,7 +48,7 @@ namespace Charts
         /// <summary>
         /// Each module is designated with a given module ID. The module ID allows parsed data to go to the appropriate module.
         /// </summary>
-        private readonly Dictionary<string, Module> modules;
+        public readonly Dictionary<string, Module> Modules;
 
         /// <summary>
         /// The NamedPipe used to transfer information from the PROS CLI to the GUI application
@@ -84,7 +84,7 @@ namespace Charts
         {
             this.window = window;
 
-            modules = new Dictionary<string, Module>();
+            Modules = new Dictionary<string, Module>();
         }
 
         ~ChartManager()
@@ -190,7 +190,7 @@ namespace Charts
 
                                                 var newModule = CreateModule(type);
 
-                                                modules.Add(modulePair.Key, newModule);
+                                                Modules.Add(modulePair.Key, newModule);
 
                                                 Application.Current.Dispatcher.Invoke(() =>
                                                 {
@@ -233,11 +233,11 @@ namespace Charts
                                             foreach (var modulePair in json)
                                             {
                                                 // Update module's data
-                                                modules[modulePair.Key].VarMap = modulePair.Value;
+                                                Modules[modulePair.Key].VarMap = modulePair.Value;
 
 
                                                 // Call update event for module
-                                                modules[modulePair.Key].Update();
+                                                Modules[modulePair.Key].Update();
 
                                             }
                                         });
