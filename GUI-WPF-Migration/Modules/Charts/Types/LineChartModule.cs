@@ -111,9 +111,6 @@ namespace GUI_WPF_Migration.Modules.Charts.Types
                 MinorGridlineColor = ColorPallete.OxyChartGridLineColor,
                 TickStyle = TickStyle.None,
                 MajorGridlineStyle = LineStyle.Solid,
-                //AbsoluteMaximum = MaxRange,
-                //AbsoluteMinimum = MinRange,
-                //IsZoomEnabled = false
             };
 
             xAxis = new LinearAxis
@@ -127,7 +124,6 @@ namespace GUI_WPF_Migration.Modules.Charts.Types
                 MajorGridlineStyle = LineStyle.Solid,
                 AbsoluteMinimum = 0
             };
-
 
             model.PlotAreaBorderColor = ColorPallete.OxyChartGridLineColor;
 

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -37,7 +38,7 @@ namespace GUI_WPF_Migration.Modules.Util
                     textBlock.FontSize = 24;
                     break;
                 default:
-                    break;
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
 
             return new ModuleTextBuilder(textBlock);

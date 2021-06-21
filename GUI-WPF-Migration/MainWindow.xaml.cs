@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Input;
+using GUI_WPF_Migration.Logging;
 
 namespace GUI_WPF_Migration
 {
@@ -20,7 +21,7 @@ namespace GUI_WPF_Migration
         /// <summary>
         /// Queue for the <see cref="Charts.ChartManager"/> to pull out of for module creation.
         /// </summary>
-        public Queue<Border> ModuleSlots { get; set; }
+        public Queue<Border> ModuleSlots { get; }
 
         public MainWindow()
         {
@@ -39,7 +40,7 @@ namespace GUI_WPF_Migration
             {
 
                 ChartManager.HostPipeServer();
-                ChartManager.AwaitPipeConnection();
+                ChartManager.AwaitPipeConnections();
                 ChartManager.StartChartLoop();
 
             }

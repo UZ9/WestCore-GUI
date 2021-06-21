@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using GUI_WPF_Migration.Logging;
 using GUI_WPF_Migration.Modules;
 using GUI_WPF_Migration.Modules.Charts.Types;
 using GUI_WPF_Migration.Modules.Movement;
@@ -53,12 +54,22 @@ namespace Charts
         /// <summary>
         /// The NamedPipe used to transfer information from the PROS CLI to the GUI application
         /// </summary>
-        private NamedPipeServerStream pipeStream;
+        private NamedPipeServerStream readPipeStream;
+
+        /// <summary>
+        /// The NamedPipe client used to transfer information from the GUI application to the PROS CLI
+        /// </summary>
+        private NamedPipeServerStream writePipeStream;
 
         /// <summary>
         /// Allows bytes to be read from the <see cref="NamedPipeServerStream"/>
         /// </summary>
         private BinaryReader streamReader;
+
+        /// <summary>
+        /// Allows text to be written to the CLI through a <see cref="NamedPipeServerStream"/>
+        /// </summary>
+        private StreamWriter streamWriter;
 
         /// <summary>
         /// The current CmStatus of the <see cref="ChartManager"/>
@@ -101,13 +112,17 @@ namespace Charts
 
             Console.WriteLine("Creating Named Pipe...");
 
-            // Create new pipe server
+            // Create new pipe servers
             // Parameters:
             // "west-pros-pipe" - name of pipe
             // PipeDirection.InOut - Allows data to be sent and received
             // 1 - Only 1 client will be able to connect at a time  
             // PipeTransmissionMode.Byte - Type of data being transferred
-            pipeStream = new NamedPipeServerStream("west-pros-pipe", PipeDirection.InOut, 1, PipeTransmissionMode.Byte);
+            // Pipe names are from the perspective of the CLI
+            readPipeStream = new NamedPipeServerStream("pros-gui-writer-pipe", PipeDirection.InOut, 2, PipeTransmissionMode.Byte);
+
+            writePipeStream = new NamedPipeServerStream("pros-gui-reader-pipe", PipeDirection.InOut, 2,
+                PipeTransmissionMode.Message);
 
             Console.WriteLine("west-core-pipe successfully initialized");
         }
@@ -115,17 +130,19 @@ namespace Charts
         /// <summary>
         /// Blocks the main thread until a successful connection to the <see cref="NamedPipeServerStream"/>.
         /// </summary>
-        public void AwaitPipeConnection()
+        public void AwaitPipeConnections()
         {
             Console.WriteLine("Waiting for connection...");
 
             Status = CmStatus.AwaitingConnection;
 
             // Wait until C++ client connects
-            pipeStream.WaitForConnection();
+            readPipeStream.WaitForConnection();
+            writePipeStream.WaitForConnection();
 
             // The stream reader will be what reads the contents from the Named Pipe
-            streamReader = new BinaryReader(pipeStream);
+            streamReader = new BinaryReader(readPipeStream);
+            streamWriter = new StreamWriter(writePipeStream);
 
             Console.WriteLine("Waiting for stdout input...");
         }
@@ -142,6 +159,8 @@ namespace Charts
 
             chartLoopToken = cancelSource.Token;
 
+            Task.Run(WriteTask, chartLoopToken);
+
             Task.Run(() =>
             {
                 while (true) // Continuously pull data from piped server
@@ -156,7 +175,15 @@ namespace Charts
                         var received = ParseReceivedData(rawString);
 
                         // If no header/data was found, continue
-                        if (!received.HasValue) continue;
+                        if (!received.HasValue)
+                        {
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                Logger.Log(Logger.Level.INFO, rawString);
+                            });
+
+                            continue;
+                        }
 
                         var (header, data) = received.Value;
 
@@ -337,7 +364,7 @@ namespace Charts
                 cancelSource = null;
             }
 
-            // Shut down the streamReader connected to the pipeStream
+            // Shut down the streamReader connected to the readPipeStream
             if (streamReader != null)
             {
                 streamReader.Close();
@@ -345,15 +372,28 @@ namespace Charts
             }
 
             // Shut down the pipe stream
-            if (pipeStream != null)
+            if (readPipeStream != null)
             {
-                if (pipeStream.IsConnected)
-                    pipeStream.Disconnect();
-                pipeStream.Close();
-                pipeStream.Dispose();
+                if (readPipeStream.IsConnected)
+                    readPipeStream.Disconnect();
+                readPipeStream.Close();
+                readPipeStream.Dispose();
             }
 
 
+        }
+
+        private async Task WriteTask()
+        {
+            while (true)
+            {
+                streamWriter.WriteLine("Hello from the GUI!");
+                streamWriter.Flush();
+
+                await Task.Delay(1000, chartLoopToken);
+
+
+            }
         }
 
     }
