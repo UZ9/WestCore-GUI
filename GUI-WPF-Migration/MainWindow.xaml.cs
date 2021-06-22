@@ -35,6 +35,8 @@ namespace GUI_WPF_Migration
 
             ModuleSlots = new Queue<Border>(currentBorders);
 
+
+
             ChartManager = new ChartManager(this);
 
             try
@@ -64,6 +66,7 @@ namespace GUI_WPF_Migration
         /// </summary>
         public void Window_Close(object sender, CancelEventArgs e)
         {
+            Console.WriteLine("Disposing...");
             ChartManager?.Dispose();
         }
 

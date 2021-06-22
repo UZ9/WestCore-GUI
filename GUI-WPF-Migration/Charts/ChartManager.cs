@@ -162,70 +162,73 @@ namespace Charts
 
             Task.Run(WriteTask, chartLoopToken);
 
-            Task.Run(() =>
+            try
             {
-                while (true) // Continuously pull data from piped server
+                Task.Run(() =>
                 {
-                    try
+                    while (true) // Continuously pull data from piped server
                     {
-                        // Example string received from the stream reader:
-                        // CONFIG_HEADER|JSON_DATA
-                        var len = (int)streamReader.ReadUInt32();
-                        var rawString = new string(streamReader.ReadChars(len));
-
-                        var received = ParseReceivedData(rawString);
-
-                        // If no header/data was found, continue
-                        if (!received.HasValue)
-                        {
-                            // Because logging has 2 '|' characters, it will always fail the ParsedReceivedData method.
-                            // Here we can check for the LOG_HEADER and send the appropriate Logger.Level.
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                if (rawString.StartsWith(LogHeader))
-                                {
-                                    var split = rawString.Split('|');
-
-                                    Logger.Level loggingLevel;
-
-                                    switch (split[1])
-                                    {
-                                        case "DEBUG":
-                                            loggingLevel = Logger.Level.DEBUG;
-                                            break;
-                                        case "WARNING":
-                                            loggingLevel = Logger.Level.WARNING;
-                                            break;
-                                        case "ERROR":
-                                            loggingLevel = Logger.Level.ERROR;
-                                            break;
-                                        case "SEVERE":
-                                            loggingLevel = Logger.Level.SEVERE;
-                                            break;
-                                        case "INFO":
-                                            loggingLevel = Logger.Level.INFO;
-                                            break;
-                                        default:
-                                            loggingLevel = Logger.Level.INFO;
-                                            break;
-                                    }
-
-                                    Logger.Log(loggingLevel, split[2]);
-                                }
-                                else
-                                {
-                                    Logger.Log(Logger.Level.STDOUT, rawString);
-                                }
-
-                            });
-
-                            continue;
-                        }
-
-                        var (header, data) = received.Value;
-
                         try
                         {
+                            if (chartLoopToken.IsCancellationRequested || streamReader == null ||
+                                !readPipeStream.IsConnected) break;
+
+                            // Example string received from the stream reader:
+                            // CONFIG_HEADER|JSON_DATA
+                            var len = (int)streamReader.ReadUInt32();
+                            var rawString = new string(streamReader.ReadChars(len));
+
+                            var received = ParseReceivedData(rawString);
+
+                            // If no header/data was found, continue
+                            if (!received.HasValue)
+                            {
+                                // Because logging has 2 '|' characters, it will always fail the ParsedReceivedData method.
+                                // Here we can check for the LOG_HEADER and send the appropriate Logger.Level.
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    if (rawString.StartsWith(LogHeader))
+                                    {
+                                        var split = rawString.Split('|');
+
+                                        Logger.Level loggingLevel;
+
+                                        switch (split[1])
+                                        {
+                                            case "DEBUG":
+                                                loggingLevel = Logger.Level.DEBUG;
+                                                break;
+                                            case "WARNING":
+                                                loggingLevel = Logger.Level.WARNING;
+                                                break;
+                                            case "ERROR":
+                                                loggingLevel = Logger.Level.ERROR;
+                                                break;
+                                            case "SEVERE":
+                                                loggingLevel = Logger.Level.SEVERE;
+                                                break;
+                                            case "INFO":
+                                                loggingLevel = Logger.Level.INFO;
+                                                break;
+                                            default:
+                                                loggingLevel = Logger.Level.INFO;
+                                                break;
+                                        }
+
+                                        Logger.Log(loggingLevel, split[2]);
+                                    }
+                                    else
+                                    {
+                                        Logger.Log(Logger.Level.STDOUT, rawString);
+                                    }
+
+                                });
+
+                                continue;
+                            }
+
+                            var (header, data) = received.Value;
+
 
                             switch (Status)
                             {
@@ -238,19 +241,22 @@ namespace Charts
                                             Console.WriteLine("Found config end header");
 
                                             // Keep appending to the config string until all data has been received (see comments on CONFIG_END_HEADER)
-                                            configString += data.Substring(0, data.Length - ConfigEndHeader.Length - 1);
+                                            configString += data.Substring(0,
+                                                data.Length - ConfigEndHeader.Length - 1);
 
                                             Console.WriteLine("End config string:");
                                             Console.WriteLine(configString);
 
-                                            var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(configString);
+                                            var json = JsonConvert
+                                                .DeserializeObject<Dictionary<string, Dictionary<string, object>>>(
+                                                    configString);
 
                                             foreach (var modulePair in json)
                                             {
                                                 // modulePair: 
                                                 // Key: Module name
                                                 // Value: Config map for module
-                                                string type = modulePair.Value["module-type"] as string;
+                                                var type = modulePair.Value["module-type"] as string;
 
                                                 var newModule = CreateModule(type);
 
@@ -262,8 +268,8 @@ namespace Charts
 
                                                     try
                                                     {
-                                                            // Send config data to module to initialize
-                                                            newModule.Initialize(modulePair.Key, modulePair.Value);
+                                                        // Send config data to module to initialize
+                                                        newModule.Initialize(modulePair.Key, modulePair.Value);
                                                     }
                                                     catch (KeyNotFoundException e)
                                                     {
@@ -284,57 +290,58 @@ namespace Charts
                                         }
 
                                     }
+
                                     break;
                                 case CmStatus.Operational:
                                     // Connections have been fully established, fetch data and update information
                                     if (header == DataHeader)
                                     {
 
-                                        var json = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(data);
+                                        var json = JsonConvert
+                                            .DeserializeObject<Dictionary<string, Dictionary<string, object>>>(
+                                                data);
 
                                         Application.Current.Dispatcher.Invoke(() =>
                                         {
                                             foreach (var modulePair in json)
                                             {
-                                                    // Update module's data
-                                                    Modules[modulePair.Key].VarMap = modulePair.Value;
+                                                // Update module's data
+                                                Modules[modulePair.Key].VarMap = modulePair.Value;
 
 
-                                                    // Call update event for module
-                                                    Modules[modulePair.Key].Update();
+                                                // Call update event for module
+                                                Modules[modulePair.Key].Update();
 
                                             }
                                         });
                                     }
+
                                     break;
                                 default:
-                                    break;
-
+                                    throw new ArgumentOutOfRangeException("An invalid CmStatus was found in the ChartManager loop.");
                             }
+
                         }
-                        catch (JsonReaderException e)
+                        catch (EndOfStreamException) // Called when the pipe connection ends
                         {
-                            Console.WriteLine(e);
+                            Console.WriteLine("Reached end of stream, ending...");
+                            break;
                         }
-                    }
-                    catch (EndOfStreamException)
-                    {
-                        Console.WriteLine("Reached end of stream, ending...");
-                        Status = CmStatus.Stopping;
-                        break;
-                    }
-                }
 
-                // Lost connection, dispose of any ongoing streams and exit the program
-                streamReader.Close();
-                streamReader.Dispose();
+                    }
 
-                Status = CmStatus.Stopped;
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Application.Current.Shutdown();
-                });
-            }, chartLoopToken);
+                    // Lost connection, dispose of any ongoing streams and exit the program
+                    streamReader.Close();
+                    streamReader.Dispose();
+
+                    Status = CmStatus.Stopped;
+                    Application.Current.Dispatcher.Invoke(() => { Application.Current.Shutdown(); });
+                }, chartLoopToken);
+            }
+            catch (TaskCanceledException)
+            {
+                Console.WriteLine("Successfully cancelled the Read Task.");
+            }
         }
 
         /// <summary>
@@ -395,18 +402,7 @@ namespace Charts
         public void Dispose()
         {
             // Cancel the task loop
-            if (cancelSource != null)
-            {
-                cancelSource.Cancel();
-                cancelSource = null;
-            }
-
-            // Shut down the streamReader connected to the readPipeStream
-            if (streamReader != null)
-            {
-                streamReader.Close();
-                streamReader.Dispose();
-            }
+            cancelSource?.Cancel();
 
             // Shut down the pipe stream
             if (readPipeStream != null)
@@ -416,19 +412,25 @@ namespace Charts
                 readPipeStream.Close();
                 readPipeStream.Dispose();
             }
-
-
         }
 
         private async Task WriteTask()
         {
             while (true)
             {
+                if (chartLoopToken.IsCancellationRequested) break;
+
                 streamWriter.WriteLine("Hello from the GUI!");
                 streamWriter.Flush();
 
-                await Task.Delay(1000, chartLoopToken);
-
+                try
+                {
+                    await Task.Delay(1000, chartLoopToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    Console.WriteLine("Successfully closed the Write Task.");
+                }
 
             }
         }
