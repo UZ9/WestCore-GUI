@@ -36,6 +36,7 @@ namespace Charts
         // Headers are to differentiate normal cout logs from ones sending data to the GUI. Only strings starting with one of these prefixes will be parsed.
         private const string DataHeader = "GUI_DATA_8378";
         private const string ConfigHeader = "GUI_DATA_CONF_8378"; // TODO: Move this to an automatically generated value based off of DATA_HEADER
+        private const string LogHeader = "LOG_HEADER_2399";
 
         // An issue encountered when sending huge amounts of configuration data (~1000 characters or more) was the buffer size. The configuration string was being chopped off as it reached the CLI,
         // meaning the JSON would freak out and break. To solve this, data is sent in a group of configuration strings until the CONFIG_END_HEADER is reached, where it is then processed.
@@ -177,9 +178,45 @@ namespace Charts
                         // If no header/data was found, continue
                         if (!received.HasValue)
                         {
+                            // Because logging has 2 '|' characters, it will always fail the ParsedReceivedData method.
+                            // Here we can check for the LOG_HEADER and send the appropriate Logger.Level.
                             Application.Current.Dispatcher.Invoke(() =>
                             {
-                                Logger.Log(Logger.Level.INFO, rawString);
+                                if (rawString.StartsWith(LogHeader))
+                                {
+                                    var split = rawString.Split('|');
+
+                                    Logger.Level loggingLevel;
+
+                                    switch (split[1])
+                                    {
+                                        case "DEBUG":
+                                            loggingLevel = Logger.Level.DEBUG;
+                                            break;
+                                        case "WARNING":
+                                            loggingLevel = Logger.Level.WARNING;
+                                            break;
+                                        case "ERROR":
+                                            loggingLevel = Logger.Level.ERROR;
+                                            break;
+                                        case "SEVERE":
+                                            loggingLevel = Logger.Level.SEVERE;
+                                            break;
+                                        case "INFO":
+                                            loggingLevel = Logger.Level.INFO;
+                                            break;
+                                        default:
+                                            loggingLevel = Logger.Level.INFO;
+                                            break;
+                                    }
+
+                                    Logger.Log(loggingLevel, split[2]);
+                                }
+                                else
+                                {
+                                    Logger.Log(Logger.Level.STDOUT, rawString);
+                                }
+
                             });
 
                             continue;
@@ -225,8 +262,8 @@ namespace Charts
 
                                                     try
                                                     {
-                                                        // Send config data to module to initialize
-                                                        newModule.Initialize(modulePair.Key, modulePair.Value);
+                                                            // Send config data to module to initialize
+                                                            newModule.Initialize(modulePair.Key, modulePair.Value);
                                                     }
                                                     catch (KeyNotFoundException e)
                                                     {
@@ -259,12 +296,12 @@ namespace Charts
                                         {
                                             foreach (var modulePair in json)
                                             {
-                                                // Update module's data
-                                                Modules[modulePair.Key].VarMap = modulePair.Value;
+                                                    // Update module's data
+                                                    Modules[modulePair.Key].VarMap = modulePair.Value;
 
 
-                                                // Call update event for module
-                                                Modules[modulePair.Key].Update();
+                                                    // Call update event for module
+                                                    Modules[modulePair.Key].Update();
 
                                             }
                                         });

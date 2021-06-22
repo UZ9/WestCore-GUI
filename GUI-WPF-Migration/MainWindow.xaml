@@ -123,32 +123,7 @@
             <!--<Button></Button>-->
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot1" Model="{Binding charts[0]}"/>-->
         </Border>
-
-
-        <!--<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" FlowDirection="RightToLeft" ZIndex="1000">
-
-            <Border Margin="15" VerticalAlignment="Top">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/>
-                </Border.Effect>
-                <Border.Style>
-                    <Style>
-                        <Setter Property="Border.Background" Value="Blue"></Setter>
-                        <Style.Triggers>
-                            <Trigger Property="Border.IsMouseOver" Value="True">
-                                <Setter Property="Border.Background" Value="Green" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Border.Style>
-                <iconPacks:PackIconOcticons Foreground="White" Kind="Sync" Height="30" Width="30" Margin="5"/>
-            </Border>
-            -->
-        <!--<iconPacks:PackIconOcticons Foreground="White" Kind="Sync" Height="30" Width="30" Margin="10,10,0,0"/>-->
-        <!--
-        </StackPanel>-->
-
-
+        
         <Border BorderThickness="2" BorderBrush="#1c1f23" x:Name="slot2" Grid.Row="0" Grid.Column="1" Margin="5"
                 CornerRadius="5" Background="#181b1f">
             <Border.Effect>
@@ -266,6 +241,29 @@
             <!--<oxy:PlotView Margin="5, 10, 20, 10" Background="#FF272B4D" x:Name="plot5" Model="{Binding Path=charts[4]}"/>-->
 
         </Border>
+        
+        <!-- <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" FlowDirection="RightToLeft" ZIndex="1000"> -->
+        <!-- -->
+        <!--     <Border Margin="15" VerticalAlignment="Top"> -->
+        <!--         <Border.Effect> -->
+        <!--             <DropShadowEffect BlurRadius="15" Direction="320" RenderingBias="Quality" ShadowDepth="4" Opacity="0.2"/> -->
+        <!--         </Border.Effect> -->
+        <!--         <Border.Style> -->
+        <!--             <Style> -->
+        <!--                 <Setter Property="Border.Background" Value="#333333"></Setter> -->
+        <!--                 <Style.Triggers> -->
+        <!--                     <Trigger Property="Border.IsMouseOver" Value="True"> -->
+        <!--                         <Setter Property="Border.Background" Value="Green" /> -->
+        <!--                     </Trigger> -->
+        <!--                 </Style.Triggers> -->
+        <!--             </Style> -->
+        <!--         </Border.Style> -->
+        <!--         <iconPacks:PackIconOcticons Foreground="#ededed" Kind="Sync" Height="20" Width="20" Margin="5"/> -->
+        <!--     </Border> -->
+        <!-- -->
+        <!--     ~1~<iconPacks:PackIconOcticons Foreground="White" Kind="Sync" Height="30" Width="30" Margin="10,10,0,0"/> @2@@1@ -->
+        <!-- -->
+        <!-- </StackPanel> -->
 
         <!--<TextBlock TextAlignment="Center" Margin="367,50,41,10" Foreground="#ededed" TextBlock.FontWeight="Normal" TextBlock.FontFamily="Roboto" TextBlock.FontSize="28.5" Grid.Row ="1" Grid.Column="1" RenderTransformOrigin="1.13,0.722">
             <Run Text="Location"/><LineBreak/>

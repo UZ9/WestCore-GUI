@@ -30,7 +30,8 @@ namespace GUI_WPF_Migration
 
             InitializeComponent();
 
-            var currentBorders = new List<Border> { slot1, slot2, slot3, slot4, slot5, slot6, slot7, slot8, slot9 };
+            // Note: The logging panel is separate from the module system and is required, preventing any module being created in slot5.
+            var currentBorders = new List<Border> { slot1, slot2, slot3, slot4, slot6, slot7, slot8, slot9 };
 
             ModuleSlots = new Queue<Border>(currentBorders);
 
